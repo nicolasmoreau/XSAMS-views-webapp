@@ -1,3 +1,3 @@
-A RESTFUL web-application to render the contents of XSAMS documents as web pages.
+A RESTFUL web-application to generate file in Hitran format from XSAMS.
 
 The application follows the "XSAMS-consumer" standard of VAMDC.
