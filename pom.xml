@@ -9,8 +9,35 @@
 
   <name>xsams-views-webapp</name>
   <url>http://maven.apache.org</url>
+  
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<VAMDC.release.version>12.07r3-SNAPSHOT</VAMDC.release.version>
+	</properties>
+  
+	<repositories>	
+		<repository>
+			<id>nexus</id>
+			<name>VAMDC Releases</name>
+			<url>http://dev.vamdc.org/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
 
   <dependencies>
+		<dependency>
+			<groupId>org.vamdc.xml</groupId>
+			<artifactId>xsams-io</artifactId>
+			<version>12.07r3-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.vamdc</groupId>
+			<artifactId>registry-client-light</artifactId>
+			<version>${VAMDC.release.version}</version>
+			<type>jar</type>
+		</dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -49,6 +76,12 @@
       <artifactId>saxon</artifactId>
       <version>9.1.0.8</version>
     </dependency>
+    
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.5</version>
+</dependency>
   </dependencies>
 
   <build>
@@ -66,6 +99,6 @@
   </build>
   
   <description>A web application to present an XSAMS document as web pages.</description>
-  <properties></properties>
+
   
 </project>

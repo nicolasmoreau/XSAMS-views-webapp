@@ -1,9 +1,11 @@
 package eu.vamdc.xsams.views;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +18,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.io.FileUtils;
+
+import eu.vamdc.hitran.ConvertXsams2Hitran;
 
 /**
  * A servlet that transforms data to web pages using XSLT. The servlet uses
@@ -67,11 +73,18 @@ public class TransformingServlet extends ErrorReportingServlet {
     String version = getXsamsVersion(getData(key));
     
     StreamSource in = getData(key);
-    response.setContentType("text/html");
+    response.setContentType("text");
     response.setCharacterEncoding("UTF-8");
     StreamResult out = new StreamResult(response.getWriter());
-    
-    
+    ConvertXsams2Hitran file = new ConvertXsams2Hitran();
+    String xsamsContent = FileUtils.readFileToString(getDataAsFile(key), "UTF-8");
+
+	String result = file.convertXSAMS(getDataAsFile(key).getAbsolutePath());
+	
+	response.setStatus(HttpServletResponse.SC_OK);
+	response.getWriter().write(result);//.write(file.convertXSAMS(xsamsContent));
+	response.getWriter().flush();
+    /*
     Transformer t = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null).newTransformer(getXslt(version));
     t.setParameter("root-location", Locations.getRootLocation(request));
     t.setParameter("line-list-location", Locations.getLineListLocation(request, key));
@@ -86,7 +99,7 @@ public class TransformingServlet extends ErrorReportingServlet {
     if (id != null) {
       t.setParameter("id", id);
     }
-    t.transform(in, out);
+    t.transform(in, out);*/
   }
   
   
@@ -110,6 +123,23 @@ public class TransformingServlet extends ErrorReportingServlet {
       throw new FileNotFoundException("Cached XSAMS file " + x.getCacheFile() + " is missing");
     }
   }
+  
+  protected File getDataAsFile(String key) 
+	      throws RequestException, IllegalStateException, FileNotFoundException {
+	    DataCache cache = (DataCache) getServletContext().getAttribute(DataCache.CACHE_ATTRIBUTE);
+	    if (cache == null) {
+	      throw new IllegalStateException("The data cache is missing");
+	    }
+	    getCache().purge();
+	    CachedDataSet x = getCache().get(key);
+	    if (x == null) {
+	      throw new RequestException("Nothing is cached under " + key);
+	    }
+	     return x.getCacheFile();
+
+	  }
+  
+
   
   protected String getKey(HttpServletRequest request) throws RequestException {
     String q = request.getPathInfo();
