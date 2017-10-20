@@ -163,6 +163,23 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("TXEYQDLBPFQVAA-UHFFFAOYSA-N", 10);
 		/* Ethylene */
 		TableGlobalQ.put("VGGSQFUCUMXWEO-UHFFFAOYSA-N", 10);
+		/* Germane */
+		TableGlobalQ.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 10);
+		TableGlobalQ.put("QUZPNFFHZPRKJD-BJUDXGSMSA-N", 10);
+		TableGlobalQ.put("QUZPNFFHZPRKJD-OIOBTWANSA-N", 10);
+		TableGlobalQ.put("QUZPNFFHZPRKJD-IGMARMGPSA-N", 10);
+		TableGlobalQ.put("QUZPNFFHZPRKJD-AKLPVKDBSA-N", 10);
+		/* Ruthenium tetroxide: Not Yet implemented */
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-RCUQKECRSA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-SQXARXAMSA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-AZCDSDHNSA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-QULCIFQISA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-CBKDSXNJSA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-PMIWTULXSA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-GIJGHNMVSA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-INZTZQCYSA-N", 10);
+		TableGlobalQ.put("GJFMDWMEOCWXGJ-DURHDXIWSA-N", 10);
+		
 		/**
 		 * Individual molecule notation
 		 */

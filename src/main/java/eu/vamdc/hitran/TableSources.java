@@ -24,9 +24,8 @@ public class TableSources {
 		for (SourceType source : sources) {
 			++index;
 			doMapping(source.getSourceID(), index);
-			// System.out.println(source.getSourceID() + ": " + index);
 		}
-		System.out.println("Sources: " + index);
+		//System.out.println("Sources: " + index);
 	}
 
 	/**

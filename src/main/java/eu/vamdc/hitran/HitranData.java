@@ -895,20 +895,21 @@ public class HitranData {
 					switch (vCode) {
 					case 10:
 						org.vamdc.xsams.cases.sphcs.Case castedCase = (org.vamdc.xsams.cases.sphcs.Case) globalQuanta;
-						if (M == 6 || M == 42) { // CH4, CF4
+						if (M == 6 || M == 42 || M == 99) { // CH4, CF4, GeH4, RuO4
 							Integer nv = getRankingValue(castedCase.getQNs().getRS(), "nv");
 							String Sym = castedCase.getQNs().getSyms().get(0).getValue();
-							if (I != 3) {
-								result.append(String.format(Locale.ROOT, "%3s", " "));
-								for (VibrationalQNType vi : castedCase.getQNs().getVis()) {
-									result.append(String.format(Locale.ROOT, "%2d", vi.getValue()));
-								}
-								result.append(String.format(Locale.ROOT, "%2d", nv));
-								result.append(String.format(Locale.ROOT, "%-2s", Sym));
-							} else { // CH3D
+							if (M == 6 && I == 3) { // CH3D
 								result.append(" ");
 								for (VibrationalQNType vi : castedCase.getQNs().getVis()) {
 									result.append(String.format(Locale.ROOT, "%d", vi.getValue()));
+								}
+								result.append(String.format(Locale.ROOT, "%2d", nv));
+								result.append(String.format(Locale.ROOT, "%-2s", Sym));
+								
+							} else { 
+								result.append(String.format(Locale.ROOT, "%3s", " "));
+								for (VibrationalQNType vi : castedCase.getQNs().getVis()) {
+									result.append(String.format(Locale.ROOT, "%2d", vi.getValue()));
 								}
 								result.append(String.format(Locale.ROOT, "%2d", nv));
 								result.append(String.format(Locale.ROOT, "%-2s", Sym));
@@ -925,7 +926,7 @@ public class HitranData {
 						}
 						break;
 					default:
-						throw new IllegalArgumentException("Case not handled " + vCode);
+						throw new IllegalArgumentException("Case not handled: " + vCode);
 					}
 				}
 			}

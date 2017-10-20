@@ -174,6 +174,26 @@ public class TableIsotopologueHitran {
 		TableI.put("DXHPZXWIPWDXHJ-OUBTZVSYSA-N", 3);
 		/* Sulfur Trioxide */
 		TableI.put("AKEJUJNQAAGONA-UHFFFAOYSA-N", 1);
+		
+/************** DIJON MOLECULES NOT YET IMPLEMENTED ******************/
+		
+		/* Germane: Not Yet implemented */
+		TableI.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 1);
+		TableI.put("QUZPNFFHZPRKJD-BJUDXGSMSA-N", 2);
+		TableI.put("QUZPNFFHZPRKJD-OIOBTWANSA-N", 3);
+		TableI.put("QUZPNFFHZPRKJD-IGMARMGPSA-N", 4);
+		TableI.put("QUZPNFFHZPRKJD-AKLPVKDBSA-N", 5);
+		
+		/* Ruthenium tetroxide: Not Yet implemented */
+		TableI.put("GJFMDWMEOCWXGJ-RCUQKECRSA-N", 1);
+		TableI.put("GJFMDWMEOCWXGJ-SQXARXAMSA-N", 2);
+		TableI.put("GJFMDWMEOCWXGJ-AZCDSDHNSA-N", 3);
+		TableI.put("GJFMDWMEOCWXGJ-QULCIFQISA-N", 4);
+		TableI.put("GJFMDWMEOCWXGJ-CBKDSXNJSA-N", 5);
+		TableI.put("GJFMDWMEOCWXGJ-PMIWTULXSA-N", 6);
+		TableI.put("GJFMDWMEOCWXGJ-GIJGHNMVSA-N", 7);
+		TableI.put("GJFMDWMEOCWXGJ-INZTZQCYSA-N", 8);
+		TableI.put("GJFMDWMEOCWXGJ-DURHDXIWSA-N", 9);
 	}
 
 	/**

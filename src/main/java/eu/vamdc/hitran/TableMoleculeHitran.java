@@ -171,6 +171,24 @@ public class TableMoleculeHitran {
 		TableM.put("DXHPZXWIPWDXHJ-OUBTZVSYSA-N", 46);
 		/* Sulfur Trioxide */
 		TableM.put("AKEJUJNQAAGONA-UHFFFAOYSA-N", 47);
+		
+		/* Germane: Not Yet implemented */
+		TableM.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 99);
+		TableM.put("QUZPNFFHZPRKJD-BJUDXGSMSA-N", 99);
+		TableM.put("QUZPNFFHZPRKJD-OIOBTWANSA-N", 99);
+		TableM.put("QUZPNFFHZPRKJD-IGMARMGPSA-N", 99);
+		TableM.put("QUZPNFFHZPRKJD-AKLPVKDBSA-N", 99);
+		
+		/* Ruthenium tetroxide: Not Yet implemented */
+		TableM.put("GJFMDWMEOCWXGJ-RCUQKECRSA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-SQXARXAMSA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-AZCDSDHNSA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-QULCIFQISA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-CBKDSXNJSA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-PMIWTULXSA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-GIJGHNMVSA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-INZTZQCYSA-N", 99);
+		TableM.put("GJFMDWMEOCWXGJ-DURHDXIWSA-N", 99);
 	}
 
 	/**
