@@ -204,6 +204,6 @@ public class TableMoleculeHitran {
 		if (TableM.containsKey(inChIKey)) {
 			return TableM.get(inChIKey);
 		}
-		return 0;
+		return 99; // default code for unknown molecule.
 	}
 }
