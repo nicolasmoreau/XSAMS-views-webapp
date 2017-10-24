@@ -19,7 +19,7 @@ public class WriteOutput {
 		if (value < 0) {
 			result.append("-");
 		} else if (value == 0) {
-			result.append(" ");
+			result.append("");
 		}
 		String tmp = String.format(Locale.ROOT, "%." + decimalPlaces + "f", value);
 		result.append(tmp.substring(tmp.indexOf('.')));
