@@ -158,7 +158,13 @@ public class TableMoleculeHitran {
 		TableM.put("WEVYAHXRMPXWCK-VQEHIDDOSA-N", 41);
 		/* Carbon Tetrafluoride */
 		TableM.put("TXEYQDLBPFQVAA-UHFFFAOYSA-N", 42);
-		/* Diacetylene */
+		/* Diacetylene, Butatrienylidene */
+		TableM.put("MRJFCQHWODZEPM-UHFFFAOYSA-N", 43);
+		TableM.put("MRJFCQHWODZEPM-AZXPZELESA-N", 43);
+		TableM.put("MRJFCQHWODZEPM-LBPDFUHNSA-N", 43);
+		TableM.put("MRJFCQHWODZEPM-MICDWDOJSA-N", 43);
+		TableM.put("MRJFCQHWODZEPM-OUBTZVSYSA-N", 43);
+		TableM.put("MRJFCQHWODZEPM-VQEHIDDOSA-N", 43);
 		/* TODO */
 		/* Cyanoacetylene - Propynenitrile */
 		TableM.put("LNDJVIYUJOJFSO-UHFFFAOYSA-N", 44);
@@ -171,6 +177,9 @@ public class TableMoleculeHitran {
 		TableM.put("DXHPZXWIPWDXHJ-OUBTZVSYSA-N", 46);
 		/* Sulfur Trioxide */
 		TableM.put("AKEJUJNQAAGONA-UHFFFAOYSA-N", 47);
+		/* Cyanogen */
+		TableM.put("NHFDIUPJVYYTLG-UHFFFAOYSA-N", 48);
+		TableM.put("JMANVNJQNLATNU-UHFFFAOYSA-N", 48);
 		
 		/* Germane: Not Yet implemented */
 		TableM.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 99);
@@ -197,7 +206,7 @@ public class TableMoleculeHitran {
 	 * chronological order of its introduction into HITRAN.
 	 * 
 	 * @param inChIKey
-	 * @return the current ID corresponding to the molecule, 0 if the molecule
+	 * @return the current ID corresponding to the molecule, 99 if the molecule
 	 *         does not exist in HITRAN
 	 */
 	public int getHitranMCode(String inChIKey) {

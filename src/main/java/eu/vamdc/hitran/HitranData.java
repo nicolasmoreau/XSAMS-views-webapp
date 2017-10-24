@@ -174,7 +174,11 @@ public class HitranData {
 		org.vamdc.xsams.cases.asymcs.Case castedCase = (org.vamdc.xsams.cases.asymcs.Case) qnCase;
 
 		/* J */
-		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+		/* in some files (like SO3) no J values are filled */
+		if (castedCase.getQNs().getJ() == null)
+			result.append(String.format(Locale.ROOT, "%3s", " "));
+		else 
+			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
 		/* Ka */
 		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKa()));
 		/* Kc */
@@ -513,6 +517,77 @@ public class HitranData {
 			vibInv = castedCase.getQNs().getVibInv();
 		}
 
+		return result.toString();
+	}
+	
+	private String lposCase(BaseCase qnCase, String level) {
+		StringBuffer result = new StringBuffer();
+		boolean needSpecialQ = false;
+		org.vamdc.xsams.cases.lpos.Case castedCase = (org.vamdc.xsams.cases.lpos.Case) qnCase;
+		String Br = " ";
+		String J = "   ";
+
+		if (level.equals("lower")) {
+			Jlow = Double.valueOf(castedCase.getQNs().getJ());
+			if (Jlow != null) {
+				J = String.format(Locale.ROOT, "%3d", Jlow.intValue());
+				/* If Jup has already been assigned then get the branch name */
+				if (Jup > -1.0) {
+					try {
+						Br = getBranchName(Jup, Jlow);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Branch not allowed for one transition: Jup=" + Jup + ", Jlow=" + Jlow);
+					}
+					Jup = Jlow = -1.0;
+				}
+			}
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", Br));
+			/* J */
+			result.append(J);
+			/* Sym */
+			String Sym = castedCase.getQNs().getKronigParity();
+			result.append(String.format(Locale.ROOT, "%1s", (Sym == null) ? " " : Sym));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+			/* Get some global quanta */
+			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+				Integer mode = vis.getMode();
+				v[mode - 1] = vis.getValue();
+			}
+			l_class7 = castedCase.getQNs().getL();
+			parity = castedCase.getQNs().getParity();
+			vibInv = castedCase.getQNs().getVibInv();
+
+		} else {
+			result.append(String.format(Locale.ROOT, "%10s", " "));
+			/* No F displayed in HITRAN example */
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+
+			Jup = Double.valueOf(castedCase.getQNs().getJ());
+
+			/* Get some global quanta */
+			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+				Integer mode = vis.getMode();
+				if (mode > 6) {
+					needSpecialQ = true;
+					break;
+				}
+				v[mode - 1] = vis.getValue();
+			}
+			if (needSpecialQ) {
+				globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
+			}
+
+			l_class7 = castedCase.getQNs().getL();
+			parity = castedCase.getQNs().getParity();
+			vibInv = castedCase.getQNs().getVibInv();
+		}		
 		return result.toString();
 	}
 
@@ -971,6 +1046,9 @@ public class HitranData {
 				break;
 			case "lpcs":
 				result = lpcsCase(quanta, level);
+				break;
+			case "lpos":
+				result = lposCase(quanta, level);
 				break;
 			case "dcs":
 				result = dcsCase(quanta, level);

@@ -161,8 +161,13 @@ public class TableIsotopologueHitran {
 		TableI.put("WEVYAHXRMPXWCK-VQEHIDDOSA-N", 0); // not in HITRAN
 		/* Carbon Tetrafluoride */
 		TableI.put("TXEYQDLBPFQVAA-UHFFFAOYSA-N", 1);
-		/* Diacetylene */
-		/* TODO */
+		/* Diacetylene, Butatrienylidene */
+		TableI.put("MRJFCQHWODZEPM-UHFFFAOYSA-N", 1);
+		TableI.put("MRJFCQHWODZEPM-AZXPZELESA-N", 0); // not in HITRAN
+		TableI.put("MRJFCQHWODZEPM-LBPDFUHNSA-N", 0); // not in HITRAN
+		TableI.put("MRJFCQHWODZEPM-MICDWDOJSA-N", 0); // not in HITRAN
+		TableI.put("MRJFCQHWODZEPM-OUBTZVSYSA-N", 0); // not in HITRAN
+		TableI.put("MRJFCQHWODZEPM-VQEHIDDOSA-N", 0); // not in HITRAN
 		/* Cyanoacetylene - Propynenitrile */
 		TableI.put("LNDJVIYUJOJFSO-UHFFFAOYSA-N", 1);
 		/* Molecular Hydrogen */
@@ -174,6 +179,9 @@ public class TableIsotopologueHitran {
 		TableI.put("DXHPZXWIPWDXHJ-OUBTZVSYSA-N", 3);
 		/* Sulfur Trioxide */
 		TableI.put("AKEJUJNQAAGONA-UHFFFAOYSA-N", 1);
+		/* Cyanogen */
+		TableI.put("NHFDIUPJVYYTLG-UHFFFAOYSA-N", 2); // not in HITRAN
+		TableI.put("JMANVNJQNLATNU-UHFFFAOYSA-N", 1);
 		
 /************** DIJON MOLECULES NOT YET IMPLEMENTED ******************/
 		

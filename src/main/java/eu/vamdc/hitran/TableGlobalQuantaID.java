@@ -38,6 +38,13 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("IJGRMHOSHXDMSA-UHFFFAOYSA-N", 1);
 		/* Nitric Oxide Cation */
 		TableGlobalQ.put("KEJOCWOXCDWNID-UHFFFAOYSA-N", 1);
+		/* Molecular Hydrogen */
+		TableGlobalQ.put("UFHFLCQGNIYNRP-UHFFFAOYSA-N", 1);
+		/* Carbon Monosulfide */
+		TableGlobalQ.put("DXHPZXWIPWDXHJ-VQEHIDDOSA-N", 1);
+		TableGlobalQ.put("DXHPZXWIPWDXHJ-HQMMCQRPSA-N", 1);
+		TableGlobalQ.put("DXHPZXWIPWDXHJ-UHFFFAOYSA-N", 1);
+		TableGlobalQ.put("DXHPZXWIPWDXHJ-OUBTZVSYSA-N", 1);
 		/**
 		 * Class 2: Diatmic molecules with different electronic levels
 		 */
@@ -132,6 +139,9 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("HSFWRNGVRCDJHI-OUBTZVSYSA-N", 7);
 		TableGlobalQ.put("HSFWRNGVRCDJHI-QDNHWIQGSA-N", 7);
 		TableGlobalQ.put("HSFWRNGVRCDJHI-UHFFFAOYSA-N", 7);
+		/* Cyanogen */
+		TableGlobalQ.put("NHFDIUPJVYYTLG-UHFFFAOYSA-N", 7);
+		TableGlobalQ.put("JMANVNJQNLATNU-UHFFFAOYSA-N", 7);
 		/**
 		 * Class 8: Pyramidal tetratomic
 		 */
@@ -140,6 +150,8 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("QGZKDVFQNNGYKY-UHFFFAOYSA-N", 8);
 		/* Phosphine */
 		TableGlobalQ.put("XYFCBTPGUUZFHI-UHFFFAOYSA-N", 8);
+		/* Sulfur Trioxide */
+		TableGlobalQ.put("AKEJUJNQAAGONA-UHFFFAOYSA-N", 8);
 		/**
 		 * Class 9: Non-linear tetratomic
 		 */
@@ -199,6 +211,13 @@ public class TableGlobalQuantaID {
 		/* Methanol */
 		TableGlobalQ.put("OKKJLVBELUTLKV-OUBTZVSYSA-N", 10);
 		TableGlobalQ.put("OKKJLVBELUTLKV-UHFFFAOYSA-N", 10);
+		/* Diacetylene, Butatrienylidene: 43 */
+		TableGlobalQ.put("MRJFCQHWODZEPM-UHFFFAOYSA-N", 9);
+		TableGlobalQ.put("MRJFCQHWODZEPM-AZXPZELESA-N", 9);
+		TableGlobalQ.put("MRJFCQHWODZEPM-LBPDFUHNSA-N", 9);
+		TableGlobalQ.put("MRJFCQHWODZEPM-MICDWDOJSA-N", 9);
+		TableGlobalQ.put("MRJFCQHWODZEPM-OUBTZVSYSA-N", 9);
+		TableGlobalQ.put("MRJFCQHWODZEPM-VQEHIDDOSA-N", 9);
 
 		// /* Methyl Bromide - Bromomethane */
 		// TableGlobalQ.put("GZUXJHMPEANEGY-VQEHIDDOSA-N", 40);
@@ -212,15 +231,6 @@ public class TableGlobalQuantaID {
 		// /* TODO */
 		// /* Cyanoacetylene - Propynenitrile*/
 		// TableGlobalQ.put("LNDJVIYUJOJFSO-UHFFFAOYSA-N", 44);
-		// /* Molecular Hydrogen */
-		// TableGlobalQ.put("UFHFLCQGNIYNRP-UHFFFAOYSA-N", 45);
-		// /* Carbon Monosulfide */
-		// TableGlobalQ.put("DXHPZXWIPWDXHJ-VQEHIDDOSA-N", 46);
-		// TableGlobalQ.put("DXHPZXWIPWDXHJ-HQMMCQRPSA-N", 46);
-		// TableGlobalQ.put("DXHPZXWIPWDXHJ-UHFFFAOYSA-N", 46);
-		// TableGlobalQ.put("DXHPZXWIPWDXHJ-OUBTZVSYSA-N", 46);
-		// /* Sulfur Trioxide */
-		// TableGlobalQ.put("AKEJUJNQAAGONA-UHFFFAOYSA-N", 47);
 	}
 
 	/**
