@@ -20,5 +20,5 @@ Known issues
 
 References
 ----------
-[1] L. S. Rothman, et al., "The HITRAN 2004 Molecular Spectroscopic Database", J. Quant. Spectrosc. Radiat. Transfer 96, 139-205 (2005).<br />
-[2] W. Raballand, et al., "Spectroscopy of X<sub>2</sub>Y<sub>4</sub> (D<sub>2h</sub>) molecules: tensorial formalism adapted to the O(3) ⊃ D<sub>2h</sub> chain, Hamiltonian and transition moment operators, J. Mol. Spectrosc. 217, 239-248 (2003)
+[1] [L. S. Rothman, et al., "The HITRAN 2004 Molecular Spectroscopic Database", J. Quant. Spectrosc. Radiat. Transfer 96, 139-205 (2005).](http://hitran.org/media/refs/HITRAN-2004.pdf)<br />
+[2] [W. Raballand, et al., "Spectroscopy of X<sub>2</sub>Y<sub>4</sub> (D<sub>2h</sub>) molecules: tensorial formalism adapted to the O(3) ⊃ D<sub>2h</sub> chain, Hamiltonian and transition moment operators, J. Mol. Spectrosc. 217, 239-248 (2003).](http://www.sciencedirect.com/science/article/pii/S0022285202000383/pdfft?md5=7edaa05488c3076a1e2796bf791510e0&pid=1-s2.0-S0022285202000383-main.pdf)
