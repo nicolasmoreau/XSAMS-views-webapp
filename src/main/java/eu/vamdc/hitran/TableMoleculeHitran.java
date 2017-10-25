@@ -7,8 +7,8 @@ public class TableMoleculeHitran {
 	private Map<String, Integer> TableM = new HashMap<String, Integer>();
 
 	/**
-	 * Do the mapping of molecular species identification number. This operation
-	 * is needed before doing anything else.
+	 * Do the mapping of molecular species identification number. This operation is
+	 * needed before doing anything else.
 	 */
 
 	public void doMapping() {
@@ -179,14 +179,14 @@ public class TableMoleculeHitran {
 		/* Cyanogen */
 		TableM.put("NHFDIUPJVYYTLG-UHFFFAOYSA-N", 48);
 		TableM.put("JMANVNJQNLATNU-UHFFFAOYSA-N", 48);
-		
+
 		/* Germane: Not Yet implemented */
 		TableM.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 99);
 		TableM.put("QUZPNFFHZPRKJD-BJUDXGSMSA-N", 99);
 		TableM.put("QUZPNFFHZPRKJD-OIOBTWANSA-N", 99);
 		TableM.put("QUZPNFFHZPRKJD-IGMARMGPSA-N", 99);
 		TableM.put("QUZPNFFHZPRKJD-AKLPVKDBSA-N", 99);
-		
+
 		/* Ruthenium tetroxide: Not Yet implemented */
 		TableM.put("GJFMDWMEOCWXGJ-RCUQKECRSA-N", 99);
 		TableM.put("GJFMDWMEOCWXGJ-SQXARXAMSA-N", 99);
@@ -200,13 +200,13 @@ public class TableMoleculeHitran {
 	}
 
 	/**
-	 * Gets the HITRAN molecular species identification number. This number has
-	 * no intrinsic meaning; a molecule is assigned a sequential number in the
+	 * Gets the HITRAN molecular species identification number. This number has no
+	 * intrinsic meaning; a molecule is assigned a sequential number in the
 	 * chronological order of its introduction into HITRAN.
 	 * 
 	 * @param inChIKey
-	 * @return the current ID corresponding to the molecule, 99 if the molecule
-	 *         does not exist in HITRAN
+	 * @return the current ID corresponding to the molecule, 99 if the molecule does
+	 *         not exist in HITRAN
 	 */
 	public int getHitranMCode(String inChIKey) {
 		if (TableM.containsKey(inChIKey)) {

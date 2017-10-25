@@ -7,9 +7,9 @@ public class TableGlobalQuantaID {
 	private Map<String, Integer> TableGlobalQ = new HashMap<String, Integer>();
 
 	/**
-	 * Do the mapping of the global Q identification number. This code is
-	 * assigned to molecules in order to sort them.This operation is needed
-	 * before doing anything else.
+	 * Do the mapping of the global Q identification number. This code is assigned
+	 * to molecules in order to sort them.This operation is needed before doing
+	 * anything else.
 	 */
 
 	public void doMapping() {
@@ -191,10 +191,10 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("GJFMDWMEOCWXGJ-GIJGHNMVSA-N", 10);
 		TableGlobalQ.put("GJFMDWMEOCWXGJ-INZTZQCYSA-N", 10);
 		TableGlobalQ.put("GJFMDWMEOCWXGJ-DURHDXIWSA-N", 10);
-		
-		/* Cyanoacetylene - Propynenitrile*/
+
+		/* Cyanoacetylene - Propynenitrile */
 		TableGlobalQ.put("LNDJVIYUJOJFSO-UHFFFAOYSA-N", 10);
-		
+
 		/**
 		 * Individual molecule notation
 		 */
@@ -218,7 +218,7 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("WEVYAHXRMPXWCK-UHFFFAOYSA-N", 10);
 		TableGlobalQ.put("WEVYAHXRMPXWCK-OUBTZVSYSA-N", 10);
 		TableGlobalQ.put("WEVYAHXRMPXWCK-VQEHIDDOSA-N", 10);
-		
+
 		/* TODO: Diacetylene, Butatrienylidene: 43 */
 		TableGlobalQ.put("MRJFCQHWODZEPM-UHFFFAOYSA-N", 10);
 		TableGlobalQ.put("MRJFCQHWODZEPM-AZXPZELESA-N", 10);
@@ -240,8 +240,8 @@ public class TableGlobalQuantaID {
 	 * field.
 	 * 
 	 * @param inChIKey
-	 * @return the ID of the class as defined in Table-3 of the HITRAN 2004
-	 *         edition. 0 if the molecule is not defined.
+	 * @return the ID of the class as defined in Table-3 of the HITRAN 2004 edition.
+	 *         0 if the molecule is not defined.
 	 */
 
 	public int getHitranGlobalQCode(String inChIKey) {

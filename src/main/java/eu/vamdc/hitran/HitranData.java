@@ -69,13 +69,14 @@ public class HitranData {
 	// Global Q when class 10
 	private static String globalQ = "";
 
-	/** Gets the type of the branch. Other values are not allowed
+	/**
+	 * Gets the type of the branch. Other values are not allowed
 	 * 
 	 * @param X1
 	 * @param X2
 	 * @return the type of the branch: O, P, Q, R or S
 	 */
-	
+
 	private String getBranchName(Double X1, Double X2) {
 		Double DX = X1 - X2;
 		switch (DX.intValue()) {
@@ -178,7 +179,7 @@ public class HitranData {
 		/* in some files (like SO3) no J values are filled */
 		if (castedCase.getQNs().getJ() == null)
 			result.append(String.format(Locale.ROOT, "%3s", " "));
-		else 
+		else
 			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
 		/* Ka */
 		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKa()));
@@ -227,8 +228,8 @@ public class HitranData {
 
 		/* N */
 		/*
-		 * In this case J is Double. For matching HITRAN format we take N, the
-		 * quantum number associated with the rotational angular momentum
+		 * In this case J is Double. For matching HITRAN format we take N, the quantum
+		 * number associated with the rotational angular momentum
 		 */
 		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getN()));
 		/* Ka */
@@ -243,8 +244,8 @@ public class HitranData {
 			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
 
 		/*
-		 * Sym field (not a symmetry) is the J-coding defined as follows: 
-		 * + means J = N+1/2 and - means J = N-1/2
+		 * Sym field (not a symmetry) is the J-coding defined as follows: + means J =
+		 * N+1/2 and - means J = N-1/2
 		 */
 
 		double Sym = castedCase.getQNs().getJ() - castedCase.getQNs().getN();
@@ -282,8 +283,8 @@ public class HitranData {
 
 		/* N */
 		/*
-		 * In this case J is Double. For matching HITRAN format we take N, the
-		 * quantum number associated with the rotational angular momentum
+		 * In this case J is Double. For matching HITRAN format we take N, the quantum
+		 * number associated with the rotational angular momentum
 		 */
 		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getN()));
 		/* Ka */
@@ -298,8 +299,8 @@ public class HitranData {
 			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
 
 		/*
-		 * Sym field (not a symmetry) is the J-coding defined as follows: +
-		 * means J = N+1/2 and - means J = N-1/2
+		 * Sym field (not a symmetry) is the J-coding defined as follows: + means J =
+		 * N+1/2 and - means J = N-1/2
 		 */
 
 		double Sym = castedCase.getQNs().getJ() - castedCase.getQNs().getN();
@@ -494,10 +495,11 @@ public class HitranData {
 		} else {
 			result.append(String.format(Locale.ROOT, "%10s", " "));
 			/* no F in this case */
-/*			if (castedCase.getQNs().getF() == null)
-				result.append(String.format(Locale.ROOT, "%5s", " "));
-			else
-				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));*/
+			/*
+			 * if (castedCase.getQNs().getF() == null)
+			 * result.append(String.format(Locale.ROOT, "%5s", " ")); else
+			 * result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+			 */
 			Jup = Double.valueOf(castedCase.getQNs().getJ());
 
 			/* Get some global quanta */
@@ -509,7 +511,7 @@ public class HitranData {
 					needSpecialQ = true;
 				}
 				v[mode - 1] = vis.getValue();
-				count ++;
+				count++;
 			}
 			l_class7 = castedCase.getQNs().getL();
 			parity = castedCase.getQNs().getParity();
@@ -526,9 +528,9 @@ public class HitranData {
 					l[i] = lis.getValue();
 					i++;
 				}
-				int l5 = (l[5-1] == null ? 0 : l[5-1]);
-				int l6 = (l[6-1] == null ? 0 : l[6-1]);
-				int l7 = (l[7-1] == null ? 0 : l[7-1]);
+				int l5 = (l[5 - 1] == null ? 0 : l[5 - 1]);
+				int l6 = (l[6 - 1] == null ? 0 : l[6 - 1]);
+				int l7 = (l[7 - 1] == null ? 0 : l[7 - 1]);
 				tmp.append(String.format(Locale.ROOT, "%2d%2d%2d", l5, l6, l7));
 				globalQ = tmp.toString();
 			}
@@ -537,7 +539,7 @@ public class HitranData {
 
 		return result.toString();
 	}
-	
+
 	private String lposCase(BaseCase qnCase, String level) {
 		StringBuffer result = new StringBuffer();
 		boolean needSpecialQ = false;
@@ -605,7 +607,7 @@ public class HitranData {
 			l_class7 = castedCase.getQNs().getL();
 			parity = castedCase.getQNs().getParity();
 			vibInv = castedCase.getQNs().getVibInv();
-		}		
+		}
 		return result.toString();
 	}
 
@@ -625,9 +627,9 @@ public class HitranData {
 		result.append(' ');
 		/* C */
 		/*
-		 * WARNING Contrary to what we retrieve in HITRAN database we want C2H4
-		 * in the same output that CH4 but in this case Symmetry has a length of
-		 * 3. So we need to check it before.
+		 * WARNING Contrary to what we retrieve in HITRAN database we want C2H4 in the
+		 * same output that CH4 but in this case Symmetry has a length of 3. So we need
+		 * to check it before.
 		 */
 		String Sym = castedCase.getQNs().getRovibSym().getValue();
 		if (Sym.length() == 3) // C2H4
@@ -687,14 +689,14 @@ public class HitranData {
 		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
 			Integer mode = vis.getMode();
 			v[mode - 1] = vis.getValue();
-			count ++;
+			count++;
 		}
 
 		if (count > 0)
 			globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
 		else
 			globalQ = String.format(Locale.ROOT, "%13s", " ");
-		
+
 		parity = castedCase.getQNs().getParity();
 
 		return result.toString();
@@ -902,7 +904,7 @@ public class HitranData {
 				result.append(String.format(Locale.ROOT, "%1s", elecStateLabel == null ? " " : elecStateLabel));
 				if (omega != null)
 					result.append(String.format(Locale.ROOT, "%3s", omega == 1.5 ? "3/2" : "1/2")); // i
-																						// parameter
+				// parameter
 				result.append(String.format(Locale.ROOT, "%2s", " "));
 				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
 				break;
@@ -934,7 +936,8 @@ public class HitranData {
 				result.append(String.format(Locale.ROOT, "%2d", v[3] == null ? 0 : v[3]));
 				result.append(String.format(Locale.ROOT, "%2d", v[4] == null ? 0 : v[4]));
 				result.append(String.format(Locale.ROOT, "%2d", l_class7 == null ? 0 : l_class7));
-				result.append(String.format(Locale.ROOT, "%1s", (parity == null || parity.equals("None")) ? " " : parity));
+				result.append(
+						String.format(Locale.ROOT, "%1s", (parity == null || parity.equals("None")) ? " " : parity));
 				result.append(String.format(Locale.ROOT, "%1s", rank == null ? " " : String.valueOf(rank)));
 				result.append(String.format(Locale.ROOT, "%1s", vibInv == null ? " " : vibInv));
 				break;
@@ -948,13 +951,14 @@ public class HitranData {
 				if (M == 28) { // PH3 Case, S is blank
 					result.append(" ");
 				} else {
-					result.append(String.format(Locale.ROOT, "%1s", (parity == null || parity.equals("None")) ? " " : parity));
+					result.append(String.format(Locale.ROOT, "%1s",
+							(parity == null || parity.equals("None")) ? " " : parity));
 				}
 				break;
 			case 9:
 				/*
-				 * FIXME: For H2O2 v4 has been replaced by the torsional quanta
-				 * n and tau. But these were not found in xsams
+				 * FIXME: For H2O2 v4 has been replaced by the torsional quanta n and tau. But
+				 * these were not found in xsams
 				 */
 				result.append(String.format(Locale.ROOT, "%3s", " "));
 				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
@@ -967,9 +971,8 @@ public class HitranData {
 			case 10:
 				if (globalQ.equals("")) {
 					/*
-					 * globalQ can be equal to "" if no mode are filled in data.
-					 * It seems that by default, if no mode are filled it is
-					 * because it is ground state
+					 * globalQ can be equal to "" if no mode are filled in data. It seems that by
+					 * default, if no mode are filled it is because it is ground state
 					 */
 					result.append(String.format(Locale.ROOT, "%7s", " "));
 					result.append("GROUND");
@@ -983,9 +986,8 @@ public class HitranData {
 			/* Case for ICB data. Only files well done */
 			for (StateExpansionType StateExpansion : ERef.getStateExpansions()) {
 				/*
-				 * Here it's a bit tricky. We need to take the first coeffecient
-				 * which is the biggest. Indeed this coefficient is the only
-				 * relevant.
+				 * Here it's a bit tricky. We need to take the first coeffecient which is the
+				 * biggest. Indeed this coefficient is the only relevant.
 				 */
 				BasisStateType BasisStateRef = (BasisStateType) StateExpansion.getCoefves().get(0).getBasisStateRef();
 				for (BaseCase globalQuanta : BasisStateRef.getCases()) {
@@ -1002,8 +1004,8 @@ public class HitranData {
 								}
 								result.append(String.format(Locale.ROOT, "%2d", nv));
 								result.append(String.format(Locale.ROOT, "%-2s", Sym));
-								
-							} else { 
+
+							} else {
 								result.append(String.format(Locale.ROOT, "%3s", " "));
 								for (VibrationalQNType vi : castedCase.getQNs().getVis()) {
 									result.append(String.format(Locale.ROOT, "%2d", vi.getValue()));
@@ -1013,10 +1015,9 @@ public class HitranData {
 							}
 						} else if (M == 38 || M == 30) { // C2H4, SF6
 							/*
-							 * HITRAN format is too small for all mode values In
-							 * consequence we write GROUND if all v are equal to
-							 * 0 or yVX if the Xth mode is different of 0 and is
-							 * equal to y.
+							 * HITRAN format is too small for all mode values In consequence we write GROUND
+							 * if all v are equal to 0 or yVX if the Xth mode is different of 0 and is equal
+							 * to y.
 							 */
 							String specialCase = getSpecialGlobalQString(castedCase.getQNs().getVis());
 							result.append(specialCase);
@@ -1135,8 +1136,7 @@ public class HitranData {
 			return (S * ((1 * 296) / (L * 273.15)));
 		} else if (units.equals("cm2/molecule/cm")) { // HITRAN
 			return S;
-		}
-		else if (units.equals("unitless")) {
+		} else if (units.equals("unitless")) {
 			// System.out.print("Warning: Because intensity is unitless, it has
 			// not been converted");
 			return 0.0;
@@ -1206,8 +1206,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets uncertainty indices of the wavenumber of the spectral line
-	 * transition in vacuum. See Table 5 in HITRAN 2004 edition.
+	 * Sets uncertainty indices of the wavenumber of the spectral line transition in
+	 * vacuum. See Table 5 in HITRAN 2004 edition.
 	 * 
 	 * param vacWnErr
 	 */
@@ -1217,8 +1217,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets reference indices of the wavenumber of the spectral line transition.
-	 * in vacuum.
+	 * Sets reference indices of the wavenumber of the spectral line transition. in
+	 * vacuum.
 	 * 
 	 * @param vacWnRef
 	 */
@@ -1228,8 +1228,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Gets the spectral line intensity in cm^{-1}/(molecule.cm^{-2}) at T_{ref}
-	 * = 296K.
+	 * Gets the spectral line intensity in cm^{-1}/(molecule.cm^{-2}) at T_{ref} =
+	 * 296K.
 	 * 
 	 * @return the line intensity
 	 */
@@ -1239,8 +1239,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets the spectral line intensity in cm^{-1}/(molecule.cm^{-2}) at T_{ref}
-	 * = 296K.
+	 * Sets the spectral line intensity in cm^{-1}/(molecule.cm^{-2}) at T_{ref} =
+	 * 296K.
 	 * 
 	 * @param S
 	 */
@@ -1311,9 +1311,10 @@ public class HitranData {
 	public void setGammaAir(double gammaAir) {
 		this.gammaAir = gammaAir;
 	}
-	
+
 	/**
-	 * Gets the air-broadened half width at half maximum (HWHM) (cm^{-1}/atm) uncertainty.
+	 * Gets the air-broadened half width at half maximum (HWHM) (cm^{-1}/atm)
+	 * uncertainty.
 	 * 
 	 * @return gammaAir value
 	 */
@@ -1323,7 +1324,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets the air-broadened half width at half maximum (HWHM) (cm^{-1}/atm) uncertainty.
+	 * Sets the air-broadened half width at half maximum (HWHM) (cm^{-1}/atm)
+	 * uncertainty.
 	 * 
 	 * @param gammaAirErr
 	 */
@@ -1343,8 +1345,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Gets the self-broadened half width at half maximum (HWHM) (cm^{-1}/atm)
-	 * at T_{ref} = 296K and reference pressure p_{ref} = 1 atm.
+	 * Gets the self-broadened half width at half maximum (HWHM) (cm^{-1}/atm) at
+	 * T_{ref} = 296K and reference pressure p_{ref} = 1 atm.
 	 * 
 	 * @return gammaSelf value
 	 */
@@ -1354,8 +1356,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets the self-broadened half width at half maximum (HWHM) (cm^{-1}/atm)
-	 * at T_{ref} = 296K and reference pressure p_{ref} = 1 atm.
+	 * Sets the self-broadened half width at half maximum (HWHM) (cm^{-1}/atm) at
+	 * T_{ref} = 296K and reference pressure p_{ref} = 1 atm.
 	 * 
 	 * @param gammaSelf
 	 */
@@ -1365,8 +1367,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets uncertainty indices of the self-broadened half width at half
-	 * maximum. See Table 5 in HITRAN 2004 edition.
+	 * Sets uncertainty indices of the self-broadened half width at half maximum.
+	 * See Table 5 in HITRAN 2004 edition.
 	 * 
 	 * @param gammaSelfErr
 	 */
@@ -1386,8 +1388,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Gets the coefficient of the temperature dependence of the air-broadened.
-	 * half width
+	 * Gets the coefficient of the temperature dependence of the air-broadened. half
+	 * width
 	 * 
 	 * @return the coefficient value nAir
 	 */
@@ -1397,8 +1399,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets the coefficient of the temperature dependence of the air-broadened.
-	 * half width
+	 * Sets the coefficient of the temperature dependence of the air-broadened. half
+	 * width
 	 * 
 	 * @param nAir
 	 */
@@ -1408,8 +1410,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets uncertainty indices of the coefficient of the temperature dependence
-	 * of the air-broadened. See Table 5 in HITRAN 2004 edition.
+	 * Sets uncertainty indices of the coefficient of the temperature dependence of
+	 * the air-broadened. See Table 5 in HITRAN 2004 edition.
 	 * 
 	 * @param nAirErr
 	 */
@@ -1419,8 +1421,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets reference indices of the coefficient of the temperature dependence
-	 * of the air-broadened.
+	 * Sets reference indices of the coefficient of the temperature dependence of
+	 * the air-broadened.
 	 * 
 	 * @param nAirRef
 	 */
@@ -1430,9 +1432,9 @@ public class HitranData {
 	}
 
 	/**
-	 * Gets the pressure shift (cm^{-1}) at T_{ref} = 296K and reference
-	 * pressure p_{ref} = 1 atm of the line position with respect to the vacuum
-	 * transition wavenumber.
+	 * Gets the pressure shift (cm^{-1}) at T_{ref} = 296K and reference pressure
+	 * p_{ref} = 1 atm of the line position with respect to the vacuum transition
+	 * wavenumber.
 	 * 
 	 * @return coefficient deltaAir value
 	 */
@@ -1442,9 +1444,9 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets the pressure shift (cm^{-1}) at T_{ref} = 296K and reference
-	 * pressure p_{ref} = 1 atm of the line position with respect to the vacuum
-	 * transition wavenumber.
+	 * Sets the pressure shift (cm^{-1}) at T_{ref} = 296K and reference pressure
+	 * p_{ref} = 1 atm of the line position with respect to the vacuum transition
+	 * wavenumber.
 	 * 
 	 * @param deltaAir
 	 */
@@ -1454,8 +1456,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Sets uncertainty indices of the pressure shift. See Table 5 in HITRAN
-	 * 2004 edition.
+	 * Sets uncertainty indices of the pressure shift. See Table 5 in HITRAN 2004
+	 * edition.
 	 * 
 	 * @param deltaAirErr
 	 */
@@ -1575,8 +1577,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Gets uncertainty indices following the uncertainty codes adopted for
-	 * HITRAN. See Table 5 in HITRAN 2004 edition.
+	 * Gets uncertainty indices following the uncertainty codes adopted for HITRAN.
+	 * See Table 5 in HITRAN 2004 edition.
 	 * 
 	 * @return a 6-char string.
 	 */
@@ -1707,8 +1709,8 @@ public class HitranData {
 	}
 
 	/**
-	 * Gets the flat * that represent the availability of program and data for
-	 * the case of line mixing.
+	 * Gets the flat * that represent the availability of program and data for the
+	 * case of line mixing.
 	 * 
 	 * @return the 1-char flag
 	 */

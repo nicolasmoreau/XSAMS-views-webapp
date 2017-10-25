@@ -7,8 +7,8 @@ public class TableIsotopologueHitran {
 	private Map<String, Integer> TableI = new HashMap<String, Integer>();
 
 	/**
-	 * Do the mapping of the isotopologue identification number. This operation
-	 * is needed before doing anything else.
+	 * Do the mapping of the isotopologue identification number. This operation is
+	 * needed before doing anything else.
 	 */
 
 	public void doMapping() {
@@ -182,16 +182,16 @@ public class TableIsotopologueHitran {
 		/* Cyanogen */
 		TableI.put("NHFDIUPJVYYTLG-UHFFFAOYSA-N", 2); // not in HITRAN
 		TableI.put("JMANVNJQNLATNU-UHFFFAOYSA-N", 1);
-		
-/************** DIJON MOLECULES NOT YET IMPLEMENTED ******************/
-		
+
+		/************** DIJON MOLECULES NOT YET IMPLEMENTED ******************/
+
 		/* Germane: Not Yet implemented */
 		TableI.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 1);
 		TableI.put("QUZPNFFHZPRKJD-BJUDXGSMSA-N", 2);
 		TableI.put("QUZPNFFHZPRKJD-OIOBTWANSA-N", 3);
 		TableI.put("QUZPNFFHZPRKJD-IGMARMGPSA-N", 4);
 		TableI.put("QUZPNFFHZPRKJD-AKLPVKDBSA-N", 5);
-		
+
 		/* Ruthenium tetroxide: Not Yet implemented */
 		TableI.put("GJFMDWMEOCWXGJ-RCUQKECRSA-N", 1);
 		TableI.put("GJFMDWMEOCWXGJ-SQXARXAMSA-N", 2);
@@ -205,9 +205,9 @@ public class TableIsotopologueHitran {
 	}
 
 	/**
-	 * Gets the HITRAN isotopologue ID number. Iso = 1 for the most abundant (by
-	 * a chosen terrestrial determination) isotopologue, Iso = 2 for the next
-	 * most abundant, etc.
+	 * Gets the HITRAN isotopologue ID number. Iso = 1 for the most abundant (by a
+	 * chosen terrestrial determination) isotopologue, Iso = 2 for the next most
+	 * abundant, etc.
 	 * 
 	 * @param inChIKey
 	 * @return the current ID corresponding to the isotopologue, 0 if the
