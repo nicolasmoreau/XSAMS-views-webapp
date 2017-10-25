@@ -493,18 +493,18 @@ public class HitranData {
 
 		} else {
 			result.append(String.format(Locale.ROOT, "%10s", " "));
-			/* F */
-			if (castedCase.getQNs().getF() == null)
+			/* no F in this case */
+/*			if (castedCase.getQNs().getF() == null)
 				result.append(String.format(Locale.ROOT, "%5s", " "));
 			else
-				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));*/
 			Jup = Double.valueOf(castedCase.getQNs().getJ());
 
 			/* Get some global quanta */
 			int count = 0;
 			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
 				Integer mode = vis.getMode();
-				/* mode = 7 with 43-HC3N */
+				/* mode = 7 with 43-HC3N-Hitran Online */
 				if (mode > 6) {
 					needSpecialQ = true;
 				}
