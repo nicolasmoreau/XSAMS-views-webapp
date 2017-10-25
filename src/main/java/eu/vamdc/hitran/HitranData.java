@@ -6,6 +6,7 @@ import java.util.Locale;
 import org.vamdc.xsams.cases.common.BaseCase;
 import org.vamdc.xsams.cases.common.RankingType;
 import org.vamdc.xsams.cases.common.SymmetrySpeciesType;
+import org.vamdc.xsams.cases.common.VibrationalAMQNType;
 import org.vamdc.xsams.cases.common.VibrationalQNType;
 import org.vamdc.xsams.schema.BasisStateType;
 import org.vamdc.xsams.schema.MolecularStateType;
@@ -62,7 +63,7 @@ public class HitranData {
 	private static Integer l2;
 	private static Integer l_class7;
 	private static String parity;
-	private static Integer[] v = new Integer[6];
+	private static Integer[] v = new Integer[7];
 	private static Integer rank;
 	private static String vibInv;
 	// Global Q when class 10
@@ -500,21 +501,38 @@ public class HitranData {
 			Jup = Double.valueOf(castedCase.getQNs().getJ());
 
 			/* Get some global quanta */
+			int count = 0;
 			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
 				Integer mode = vis.getMode();
+				/* mode = 7 with 43-HC3N */
 				if (mode > 6) {
 					needSpecialQ = true;
-					break;
 				}
 				v[mode - 1] = vis.getValue();
+				count ++;
 			}
-			if (needSpecialQ) {
-				globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
-			}
-
 			l_class7 = castedCase.getQNs().getL();
 			parity = castedCase.getQNs().getParity();
 			vibInv = castedCase.getQNs().getVibInv();
+			if (needSpecialQ) {
+				StringBuffer tmp = new StringBuffer();
+
+				for (int i = 0; i < count; i++) {
+					tmp.append(String.format(Locale.ROOT, "%d", v[i]));
+				}
+				Integer[] l = new Integer[10];
+				int i = 0;
+				for (VibrationalAMQNType lis : castedCase.getQNs().getLis()) {
+					l[i] = lis.getValue();
+					i++;
+				}
+				int l5 = (l[5-1] == null ? 0 : l[5-1]);
+				int l6 = (l[6-1] == null ? 0 : l[6-1]);
+				int l7 = (l[7-1] == null ? 0 : l[7-1]);
+				tmp.append(String.format(Locale.ROOT, "%2d%2d%2d", l5, l6, l7));
+				globalQ = tmp.toString();
+			}
+
 		}
 
 		return result.toString();
@@ -637,13 +655,18 @@ public class HitranData {
 
 	private String stcsCase(BaseCase qnCase) {
 		StringBuffer result = new StringBuffer();
-		boolean needSpecialQ = false;
 		org.vamdc.xsams.cases.stcs.Case castedCase = (org.vamdc.xsams.cases.stcs.Case) qnCase;
 
 		/* J */
-		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+		if (castedCase.getQNs().getJ() == null)
+			result.append(String.format(Locale.ROOT, "%3s", " "));
+		else
+			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
 		/* K */
-		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
+		if (castedCase.getQNs().getK() == null)
+			result.append(String.format(Locale.ROOT, "%3s", " "));
+		else
+			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
 		/* l */
 		result.append(String.format(Locale.ROOT, "%2s", " ")); // TODO
 		/* C */
@@ -660,19 +683,18 @@ public class HitranData {
 			result.append(getFFormat4(castedCase.getQNs().getF().getValue()));
 
 		/* Get some global quanta */
+		int count = 0;
 		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
 			Integer mode = vis.getMode();
-			/* For larger molecule like CH3OH from JPL */
-			if (mode > 6) {
-				needSpecialQ = true;
-				break;
-			}
 			v[mode - 1] = vis.getValue();
-		}
-		if (needSpecialQ) {
-			globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
+			count ++;
 		}
 
+		if (count > 0)
+			globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
+		else
+			globalQ = String.format(Locale.ROOT, "%13s", " ");
+		
 		parity = castedCase.getQNs().getParity();
 
 		return result.toString();

@@ -165,7 +165,6 @@ public class TableMoleculeHitran {
 		TableM.put("MRJFCQHWODZEPM-MICDWDOJSA-N", 43);
 		TableM.put("MRJFCQHWODZEPM-OUBTZVSYSA-N", 43);
 		TableM.put("MRJFCQHWODZEPM-VQEHIDDOSA-N", 43);
-		/* TODO */
 		/* Cyanoacetylene - Propynenitrile */
 		TableM.put("LNDJVIYUJOJFSO-UHFFFAOYSA-N", 44);
 		/* Molecular Hydrogen */

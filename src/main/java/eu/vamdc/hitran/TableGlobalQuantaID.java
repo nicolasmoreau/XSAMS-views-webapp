@@ -192,6 +192,9 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("GJFMDWMEOCWXGJ-INZTZQCYSA-N", 10);
 		TableGlobalQ.put("GJFMDWMEOCWXGJ-DURHDXIWSA-N", 10);
 		
+		/* Cyanoacetylene - Propynenitrile*/
+		TableGlobalQ.put("LNDJVIYUJOJFSO-UHFFFAOYSA-N", 10);
+		
 		/**
 		 * Individual molecule notation
 		 */
@@ -211,26 +214,23 @@ public class TableGlobalQuantaID {
 		/* Methanol */
 		TableGlobalQ.put("OKKJLVBELUTLKV-OUBTZVSYSA-N", 10);
 		TableGlobalQ.put("OKKJLVBELUTLKV-UHFFFAOYSA-N", 10);
-		/* Diacetylene, Butatrienylidene: 43 */
-		TableGlobalQ.put("MRJFCQHWODZEPM-UHFFFAOYSA-N", 9);
-		TableGlobalQ.put("MRJFCQHWODZEPM-AZXPZELESA-N", 9);
-		TableGlobalQ.put("MRJFCQHWODZEPM-LBPDFUHNSA-N", 9);
-		TableGlobalQ.put("MRJFCQHWODZEPM-MICDWDOJSA-N", 9);
-		TableGlobalQ.put("MRJFCQHWODZEPM-OUBTZVSYSA-N", 9);
-		TableGlobalQ.put("MRJFCQHWODZEPM-VQEHIDDOSA-N", 9);
+		/* Methyl Cyanide */
+		TableGlobalQ.put("WEVYAHXRMPXWCK-UHFFFAOYSA-N", 10);
+		TableGlobalQ.put("WEVYAHXRMPXWCK-OUBTZVSYSA-N", 10);
+		TableGlobalQ.put("WEVYAHXRMPXWCK-VQEHIDDOSA-N", 10);
+		
+		/* TODO: Diacetylene, Butatrienylidene: 43 */
+		TableGlobalQ.put("MRJFCQHWODZEPM-UHFFFAOYSA-N", 10);
+		TableGlobalQ.put("MRJFCQHWODZEPM-AZXPZELESA-N", 10);
+		TableGlobalQ.put("MRJFCQHWODZEPM-LBPDFUHNSA-N", 10);
+		TableGlobalQ.put("MRJFCQHWODZEPM-MICDWDOJSA-N", 10);
+		TableGlobalQ.put("MRJFCQHWODZEPM-OUBTZVSYSA-N", 10);
+		TableGlobalQ.put("MRJFCQHWODZEPM-VQEHIDDOSA-N", 10);
 
 		// /* Methyl Bromide - Bromomethane */
 		// TableGlobalQ.put("GZUXJHMPEANEGY-VQEHIDDOSA-N", 40);
 		// TableGlobalQ.put("GZUXJHMPEANEGY-UHFFFAOYSA-N", 40);
 		// TableGlobalQ.put("GZUXJHMPEANEGY-JVVVGQRLSA-N", 40);
-		// /* Methyl Cyanide */
-		// TableGlobalQ.put("WEVYAHXRMPXWCK-UHFFFAOYSA-N", 41);
-		// TableGlobalQ.put("WEVYAHXRMPXWCK-OUBTZVSYSA-N", 41);
-		// TableGlobalQ.put("WEVYAHXRMPXWCK-VQEHIDDOSA-N", 41);
-		// /* Diacetylene */
-		// /* TODO */
-		// /* Cyanoacetylene - Propynenitrile*/
-		// TableGlobalQ.put("LNDJVIYUJOJFSO-UHFFFAOYSA-N", 44);
 	}
 
 	/**
