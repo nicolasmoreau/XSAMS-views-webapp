@@ -64,6 +64,11 @@ public class HitranData {
 	private static Integer l_class7;
 	private static String parity;
 	private static Integer[] v = new Integer[7];
+	
+	/* for NH3 */
+	private static Integer[] l = new Integer[7];
+	private static String VibSym;
+	
 	private static Integer rank;
 	private static String vibInv;
 	// Global Q when class 10
@@ -655,34 +660,65 @@ public class HitranData {
 	 * @return
 	 */
 
-	private String stcsCase(BaseCase qnCase) {
+	private String stcsCase(BaseCase qnCase, int M) {
 		StringBuffer result = new StringBuffer();
 		org.vamdc.xsams.cases.stcs.Case castedCase = (org.vamdc.xsams.cases.stcs.Case) qnCase;
 
-		/* J */
-		if (castedCase.getQNs().getJ() == null)
-			result.append(String.format(Locale.ROOT, "%3s", " "));
-		else
-			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
-		/* K */
-		if (castedCase.getQNs().getK() == null)
-			result.append(String.format(Locale.ROOT, "%3s", " "));
-		else
-			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
-		/* l */
-		result.append(String.format(Locale.ROOT, "%2s", " ")); // TODO
-		/* C */
-		SymmetrySpeciesType C = castedCase.getQNs().getRovibSym();
-		result.append(String.format(Locale.ROOT, "%2s", C == null ? " " : C.getValue()));
-		/* Sym */
-		String Sym = null; // castedCase.getQNs().get
-		result.append(String.format(Locale.ROOT, "%1s", Sym == null ? " " : Sym)); // TODO
+		if (M == 11) { // NH3
+			/* J */
+			if (castedCase.getQNs().getJ() == null)
+				result.append(String.format(Locale.ROOT, "%2s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%2d", castedCase.getQNs().getJ()));
+			/* K */
+			if (castedCase.getQNs().getK() == null)
+				result.append(String.format(Locale.ROOT, "%3s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
+			/* vibInv */
+			if (castedCase.getQNs().getVibInv() == null)
+				result.append(String.format(Locale.ROOT, "%2s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%2s", castedCase.getQNs().getVibInv()));
+			result.append(String.format(Locale.ROOT, "%1s", " "));
+			/* RotSym */
+			SymmetrySpeciesType C = castedCase.getQNs().getRotSym();
+			result.append(String.format(Locale.ROOT, "%-3s", C == null ? " " : C.getValue()));
+			/* RoVibSym */
+			SymmetrySpeciesType Sym = castedCase.getQNs().getRovibSym();
+			result.append(String.format(Locale.ROOT, "%-3s", Sym == null ? " " : Sym.getValue()));
+			result.append(String.format(Locale.ROOT, "%1s", " "));
+		}
 
-		/* F */
-		if (castedCase.getQNs().getF() == null)
-			result.append(String.format(Locale.ROOT, "%4s", " "));
-		else
-			result.append(getFFormat4(castedCase.getQNs().getF().getValue()));
+		else {
+			/* J */
+			if (castedCase.getQNs().getJ() == null)
+				result.append(String.format(Locale.ROOT, "%3s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+			/* K */
+			if (castedCase.getQNs().getK() == null)
+				result.append(String.format(Locale.ROOT, "%3s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
+			/* l */
+			// if (castedCase.getQNs().get == null) // cannot get l value ????: FIXME
+			result.append(String.format(Locale.ROOT, "%2s", " "));
+			// else
+			// result.append(String.format(Locale.ROOT, "%2s", castedCase.getQNs().get));
+			/* C */
+			SymmetrySpeciesType C = castedCase.getQNs().getRovibSym();
+			result.append(String.format(Locale.ROOT, "%-2s", C == null ? " " : C.getValue()));
+			/* Sym */
+			String Sym = null; // castedCase.getQNs().get
+			result.append(String.format(Locale.ROOT, "%1s", Sym == null ? " " : Sym)); // FIXME
+
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%4s", " "));
+			else
+				result.append(getFFormat4(castedCase.getQNs().getF().getValue()));
+		}
 
 		/* Get some global quanta */
 		int count = 0;
@@ -696,9 +732,20 @@ public class HitranData {
 			globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
 		else
 			globalQ = String.format(Locale.ROOT, "%13s", " ");
-
+		
 		parity = castedCase.getQNs().getParity();
 
+		/* NH3 */
+		for (VibrationalAMQNType lis : castedCase.getQNs().getLis()) {
+			Integer mode = lis.getMode();
+			l[mode - 1] = lis.getValue();
+		}
+		
+		if (castedCase.getQNs().getVibSym() != null)
+			VibSym = castedCase.getQNs().getVibSym().getValue();
+		else 
+			VibSym = "    ";
+		
 		return result.toString();
 	}
 
@@ -942,17 +989,26 @@ public class HitranData {
 				result.append(String.format(Locale.ROOT, "%1s", vibInv == null ? " " : vibInv));
 				break;
 			case 8:
-				result.append(String.format(Locale.ROOT, "%5s", " "));
-				result.append(String.format(Locale.ROOT, "%-2d", v[0] == null ? 0 : v[0]));
-				result.append(String.format(Locale.ROOT, "%-2d", v[1] == null ? 0 : v[1]));
-				result.append(String.format(Locale.ROOT, "%-2d", v[2] == null ? 0 : v[2]));
-				result.append(String.format(Locale.ROOT, "%-2d", v[3] == null ? 0 : v[3]));
-				/* Get S value */
-				if (M == 28) { // PH3 Case, S is blank
-					result.append(" ");
+				if (M == 11) { // NH3 case
+					result.append(String.format(Locale.ROOT, "%1s", " "));
+					result.append(String.format(Locale.ROOT, "%1d", v[0] == null ? 0 : v[0]));
+					result.append(String.format(Locale.ROOT, "%1d", v[1] == null ? 0 : v[1]));
+					result.append(String.format(Locale.ROOT, "%1d", v[2] == null ? 0 : v[2]));
+					result.append(String.format(Locale.ROOT, "%1d", v[3] == null ? 0 : v[3]));
+					result.append(String.format(Locale.ROOT, "%1s", " "));
+					result.append(String.format(Locale.ROOT, "%1d", l[2] == null ? 0 : l[2]));
+					result.append(String.format(Locale.ROOT, "%1d", l[3] == null ? 0 : l[3]));
+					result.append(String.format(Locale.ROOT, "%1s", " "));
+					result.append(String.format(Locale.ROOT, " ")); // FIXME: can't get l
+					result.append(String.format(Locale.ROOT, "%4s", VibSym));
+					result.append(String.format(Locale.ROOT, "%1s", " "));
 				} else {
-					result.append(String.format(Locale.ROOT, "%1s",
-							(parity == null || parity.equals("None")) ? " " : parity));
+					result.append(String.format(Locale.ROOT, "%5s", " "));
+					result.append(String.format(Locale.ROOT, "%-2d", v[0] == null ? 0 : v[0]));
+					result.append(String.format(Locale.ROOT, "%-2d", v[1] == null ? 0 : v[1]));
+					result.append(String.format(Locale.ROOT, "%-2d", v[2] == null ? 0 : v[2]));
+					result.append(String.format(Locale.ROOT, "%-2d", v[3] == null ? 0 : v[3]));
+					result.append("  ");
 				}
 				break;
 			case 9:
@@ -1040,7 +1096,7 @@ public class HitranData {
 	 * @return the local quanta string value
 	 */
 
-	public String getLocalQuanta(MolecularStateType ERef, String level) {
+	public String getLocalQuanta(MolecularStateType ERef, String level, int M) {
 		String result = "";
 
 		if (ERef.getCases().isEmpty())
@@ -1082,7 +1138,7 @@ public class HitranData {
 				break;
 			/* Group 4: Symmetric rotor */
 			case "stcs":
-				result = stcsCase(quanta);
+				result = stcsCase(quanta, M);
 				break;
 			/* Group 5: Triplet-Sig ground electronic states */
 			case "hundb":

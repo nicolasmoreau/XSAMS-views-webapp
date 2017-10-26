@@ -172,13 +172,13 @@ public class ConvertXsams2Hitran {
 
 					vCode = tableQ.getHitranGlobalQCode(inChIKey);
 					/* Upper-state "local" quanta */
-					String qUp = data.getLocalQuanta(EUpRef, "upper");
+					String qUp = data.getLocalQuanta(EUpRef, "upper", data.getM());
 					data.setQUp(qUp);
 					/* Upper-state "global" quanta */
 					String vUp = data.getGlobalQuanta(EUpRef, vCode, data.getM(), data.getI());
 					data.setVUp(vUp);
 					/* Lower-state "local" quanta */
-					String qLow = data.getLocalQuanta(ELowRef, "lower");
+					String qLow = data.getLocalQuanta(ELowRef, "lower", data.getM());
 					data.setQLow(qLow);
 					/* Lower-state "global" quanta */
 					String vLow = data.getGlobalQuanta(ELowRef, vCode, data.getM(), data.getI());
