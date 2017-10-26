@@ -25,13 +25,13 @@ It seems that it is impossible to get this field with the current xsams schema:
 **Molecule 6, iso. 3 (CH<sub>3</sub>D or Methane):**<br />
 In HITRAN:<br />
 - Vibrational states are describer by a character string.<br />
-- Rotational quanta are the traditional `J`, `K`, `C` (`C<sub>3v</sub>`) group).
+- Rotational quanta are the traditional `J`, `K`, `C` (`C`<sub>`3v`</sub>) group).
 
 In MeCaSDa:<br />
 - Vibrational  states are describes by 6 vibrational quanta and a vibrational symmetry (`D<sub>∞h</sub>` group).<br />
-- Rotational quanta are given by `J`, `C` (`C<sub>3v</sub>` group) and `N`, where `N` is a numbering index. This is the tensorial formalism notation described in Ref. [2].
+- Rotational quanta are given by `J`, `C` (`C`<sub>`3v`</sub> group) and `N`, where `N` is a numbering index. This is the tensorial formalism notation described in Ref. [2].
 
-**Molecule 38 (C<sub>2</sub>H<sub>4</sub> or Ethene):** For ethene, in the HITRAN databases the local quanta are given in the form `J` `K<sub>a</sub>` `K<sub>c</sub>`, that is the traditional asymmetric top notation. In *ECaSDa*, we use `J` `C` `α`, the tensorial formalism notation, as defined in Equation (56) of Ref. [3].
+**Molecule 38 (C<sub>2</sub>H<sub>4</sub> or Ethene):** For ethene, in the HITRAN databases the local quanta are given in the form `J` `K`<sub>`a`</sub> `K`<sub>`c`</sub>, that is the traditional asymmetric top notation. In *ECaSDa*, we use `J` `C` `α`, the tensorial formalism notation, as defined in Equation (56) of Ref. [3].
 
 References
 ----------
