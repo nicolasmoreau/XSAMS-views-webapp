@@ -181,11 +181,11 @@ public class TableMoleculeHitran {
 		TableM.put("JMANVNJQNLATNU-UHFFFAOYSA-N", 48);
 
 		/* Germane: Not Yet implemented */
-		TableM.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 99);
-		TableM.put("QUZPNFFHZPRKJD-BJUDXGSMSA-N", 99);
-		TableM.put("QUZPNFFHZPRKJD-OIOBTWANSA-N", 99);
-		TableM.put("QUZPNFFHZPRKJD-IGMARMGPSA-N", 99);
-		TableM.put("QUZPNFFHZPRKJD-AKLPVKDBSA-N", 99);
+		TableM.put("QUZPNFFHZPRKJD-OUBTZVSYSA-N", 52);
+		TableM.put("QUZPNFFHZPRKJD-BJUDXGSMSA-N", 52);
+		TableM.put("QUZPNFFHZPRKJD-OIOBTWANSA-N", 52);
+		TableM.put("QUZPNFFHZPRKJD-IGMARMGPSA-N", 52);
+		TableM.put("QUZPNFFHZPRKJD-AKLPVKDBSA-N", 52);
 
 		/* Ruthenium tetroxide: Not Yet implemented */
 		TableM.put("GJFMDWMEOCWXGJ-RCUQKECRSA-N", 99);

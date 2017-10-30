@@ -1050,7 +1050,7 @@ public class HitranData {
 					switch (vCode) {
 					case 10:
 						org.vamdc.xsams.cases.sphcs.Case castedCase = (org.vamdc.xsams.cases.sphcs.Case) globalQuanta;
-						if (M == 6 || M == 42 || M == 99) { // CH4, CF4, GeH4, RuO4
+						if (M == 6 || M == 42 || M == 52 || M == 99) { // CH4, CF4, GeH4, RuO4
 							Integer nv = getRankingValue(castedCase.getQNs().getRS(), "nv");
 							String Sym = castedCase.getQNs().getSyms().get(0).getValue();
 							if (M == 6 && I == 3) { // CH3D
