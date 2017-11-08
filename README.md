@@ -10,16 +10,9 @@ HITRAN format follows the HITRAN2004 [1] standard with parameters provided in 16
 
 Known issues
 ------------
-**Molecule 11 (NH<sub>3</sub> or Ammonia)** Cannot get *l* value.<br />
-**Molecule 24 (CH<sub>3</sub>Cl or Methyl Chloride)** Cannot get *l* value.
-
-It seems that it is impossible to get this field with the current xsams schema:
-```
-<stcs:l>0</stcs:l>
-```
-
 **Molecule 34 (O):** The atomic data are not translatable for now.<br />
 **Molecule 40 (CH<sub>3</sub>Br or Methyl Bromide):** This molecule is not found in VAMDC.<br />
+**Molecule 48 (C<sub>2</sub>N<sub>2</sub> or Cyanogen):** This molecule is not found in VAMDC in HITRAN Online.
 **Molecule 49 (COCl<sub>2</sub> or Phosgene):** This molecule is not found in VAMDC.
 
 **Molecule 6, iso. 3 (CH<sub>3</sub>D or Methane):**<br />

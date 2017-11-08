@@ -69,6 +69,8 @@ public class HitranData {
 	private static Integer[] l = new Integer[7];
 	private static String VibSym;
 	
+	private static Integer l_stcs;
+	
 	private static Integer rank;
 	private static String vibInv;
 	// Global Q when class 10
@@ -702,10 +704,10 @@ public class HitranData {
 			else
 				result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
 			/* l */
-			// if (castedCase.getQNs().get == null) // cannot get l value ????: FIXME
-			result.append(String.format(Locale.ROOT, "%2s", " "));
-			// else
-			// result.append(String.format(Locale.ROOT, "%2s", castedCase.getQNs().get));
+			if (castedCase.getQNs().getLS().isEmpty()) 
+				result.append(String.format(Locale.ROOT, "%2s", " "));
+			else 
+				result.append(String.format(Locale.ROOT, "%2s", castedCase.getQNs().getLS().get(0)));
 			/* C */
 			SymmetrySpeciesType C = castedCase.getQNs().getRovibSym();
 			result.append(String.format(Locale.ROOT, "%-2s", C == null ? " " : C.getValue()));
@@ -744,7 +746,12 @@ public class HitranData {
 		if (castedCase.getQNs().getVibSym() != null)
 			VibSym = castedCase.getQNs().getVibSym().getValue();
 		else 
-			VibSym = "    ";
+			VibSym = "   ";
+		
+		/* stcs */
+		
+		if (!castedCase.getQNs().getLS().isEmpty()) 
+			l_stcs = castedCase.getQNs().getLS().get(0);
 		
 		return result.toString();
 	}
@@ -999,8 +1006,9 @@ public class HitranData {
 					result.append(String.format(Locale.ROOT, "%1d", l[2] == null ? 0 : l[2]));
 					result.append(String.format(Locale.ROOT, "%1d", l[3] == null ? 0 : l[3]));
 					result.append(String.format(Locale.ROOT, "%1s", " "));
-					result.append(String.format(Locale.ROOT, " ")); // FIXME: can't get l
-					result.append(String.format(Locale.ROOT, "%4s", VibSym));
+					result.append(String.format(Locale.ROOT, "%1d", l_stcs == null ? 0 : l_stcs));
+					result.append(String.format(Locale.ROOT, "%1s", " "));
+					result.append(String.format(Locale.ROOT, "%-3s", VibSym));
 					result.append(String.format(Locale.ROOT, "%1s", " "));
 				} else {
 					result.append(String.format(Locale.ROOT, "%5s", " "));
