@@ -67,7 +67,9 @@ public class HitranData {
 	
 	/* for NH3 */
 	private static Integer[] l = new Integer[7];
-	private static String VibSym;
+	private static String VibSym; /* also used for Hitran-Online CH4 */
+	
+	private static Integer Nv; /* for Hitran-Online CH4 */
 	
 	private static Integer l_stcs;
 	
@@ -651,6 +653,17 @@ public class HitranData {
 			result.append(String.format(Locale.ROOT, "%5s", " "));
 		else
 			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+		
+		/* Get some global quanta */
+		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+			Integer mode = vis.getMode();
+			v[mode - 1] = vis.getValue();
+		}
+		if (castedCase.getQNs().getVibSym() != null)
+			VibSym = castedCase.getQNs().getVibSym().getValue();
+		else 
+			VibSym = "   ";
+		Nv = getRankingValue(castedCase.getQNs().getRS(), "n"); /* HITRAN Online uses n instead of nv */
 
 		return result.toString();
 	}
@@ -939,7 +952,6 @@ public class HitranData {
 
 	public String getGlobalQuanta(MolecularStateType ERef, int vCode, int M, int I) {
 		StringBuffer result = new StringBuffer();
-
 		/* We first check if BasisStates are set */
 		if (ERef.getStateExpansions().isEmpty()) {
 			switch (vCode) {
@@ -1033,15 +1045,25 @@ public class HitranData {
 				result.append(String.format(Locale.ROOT, "%2d", v[5] == null ? 0 : v[5]));
 				break;
 			case 10:
-				if (globalQ.equals("")) {
-					/*
-					 * globalQ can be equal to "" if no mode are filled in data. It seems that by
-					 * default, if no mode are filled it is because it is ground state
-					 */
-					result.append(String.format(Locale.ROOT, "%7s", " "));
-					result.append("GROUND");
-				} else
-					result.append(globalQ);
+				if (M == 6) { /* Case of HITRAN Online */
+					result.append(String.format(Locale.ROOT, "%3s", " "));
+					result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
+					result.append(String.format(Locale.ROOT, "%2d", v[1] == null ? 0 : v[1]));
+					result.append(String.format(Locale.ROOT, "%2d", v[2] == null ? 0 : v[2]));
+					result.append(String.format(Locale.ROOT, "%2d", v[3] == null ? 0 : v[3]));
+					result.append(String.format(Locale.ROOT, "%2d", Nv));
+					result.append(String.format(Locale.ROOT, "%-2s", VibSym));
+				} else {
+					if (globalQ.equals("")) {
+						/*
+						 * globalQ can be equal to "" if no mode are filled in data. It seems that by
+						 * default, if no mode are filled it is because it is ground state
+						 */
+						result.append(String.format(Locale.ROOT, "%7s", " "));
+						result.append("GROUND");
+					} else
+						result.append(globalQ);
+				}
 				break;
 			default:
 				throw new IllegalArgumentException("Case not handled: " + vCode);
