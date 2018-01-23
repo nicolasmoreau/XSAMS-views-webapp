@@ -110,6 +110,7 @@ public class TableMoleculeHitran {
 		TableM.put("LELOWRISYMNNSU-UHFFFAOYSA-N", 23);
 		/* Methyl Chloride - Chloromethane */
 		TableM.put("NEHMKBQYUWJMIP-UHFFFAOYSA-N", 24);
+		TableM.put("NEHMKBQYUWJMIP-HQMMCQRPSA-N", 24);
 		/* Hydrogen Peroxide */
 		TableM.put("MHAJPDPJQMAIIY-UHFFFAOYSA-N", 25);
 		/* Acetylene */

@@ -202,6 +202,7 @@ public class TableGlobalQuantaID {
 		TableGlobalQ.put("XYLGPCWDPLOBGP-UHFFFAOYSA-N", 10);
 		/* Methyl Chloride - Chloromethane */
 		TableGlobalQ.put("NEHMKBQYUWJMIP-UHFFFAOYSA-N", 10);
+		TableGlobalQ.put("NEHMKBQYUWJMIP-HQMMCQRPSA-N", 10);
 		/* Ethane */
 		TableGlobalQ.put("OTMSDBZUPAUEDD-UHFFFAOYSA-N", 10);
 		/* Nitric Acid */

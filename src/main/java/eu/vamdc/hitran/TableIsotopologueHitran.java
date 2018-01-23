@@ -111,6 +111,7 @@ public class TableIsotopologueHitran {
 		TableI.put("LELOWRISYMNNSU-UHFFFAOYSA-N", 1);
 		/* Methyl Chloride - Chloromethane */
 		TableI.put("NEHMKBQYUWJMIP-UHFFFAOYSA-N", 1);
+		TableI.put("NEHMKBQYUWJMIP-HQMMCQRPSA-N", 2);
 		/* Hydrogen Peroxide */
 		TableI.put("MHAJPDPJQMAIIY-UHFFFAOYSA-N", 1);
 		/* Acetylene */
