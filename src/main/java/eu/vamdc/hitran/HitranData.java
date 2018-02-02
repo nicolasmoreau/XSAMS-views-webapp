@@ -1066,7 +1066,7 @@ public class HitranData {
 				}
 				break;
 			default:
-				throw new IllegalArgumentException("Case not handled: " + vCode);
+				result.append("");
 			}
 		} else {
 			/* Case for ICB data. Only files well done */
