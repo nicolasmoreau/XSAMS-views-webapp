@@ -629,10 +629,14 @@ public class HitranData {
 
 	private String sphcsCase(BaseCase qnCase) {
 		StringBuffer result = new StringBuffer();
+		String Sym = " ";
 		org.vamdc.xsams.cases.sphcs.Case castedCase = (org.vamdc.xsams.cases.sphcs.Case) qnCase;
 
 		/* J */
-		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+		if (castedCase.getQNs().getJ() == null)
+			result.append(String.format(Locale.ROOT, "%3s", " "));
+		else
+			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
 		result.append(' ');
 		/* C */
 		/*
@@ -640,7 +644,10 @@ public class HitranData {
 		 * same output that CH4 but in this case Symmetry has a length of 3. So we need
 		 * to check it before.
 		 */
-		String Sym = castedCase.getQNs().getRovibSym().getValue();
+		
+		if (castedCase.getQNs().getRovibSym() != null) {
+			Sym = castedCase.getQNs().getRovibSym().getValue();
+		}
 		if (Sym.length() == 3) // C2H4
 			result.append(String.format(Locale.ROOT, "%-3s", Sym));
 		else {
@@ -662,7 +669,7 @@ public class HitranData {
 		if (castedCase.getQNs().getVibSym() != null)
 			VibSym = castedCase.getQNs().getVibSym().getValue();
 		else 
-			VibSym = "   ";
+			VibSym = "  ";
 		Nv = getRankingValue(castedCase.getQNs().getRS(), "n"); /* HITRAN Online uses n instead of nv */
 
 		return result.toString();
