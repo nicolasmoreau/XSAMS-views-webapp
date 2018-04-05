@@ -9,9 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 public class Locations {
   
   public static String getRootLocation(HttpServletRequest request) {
-    return String.format("http://%s:%d%s",
+    return String.format("http://%s%s",
                          request.getServerName(),
-                         request.getLocalPort(),
                          request.getContextPath());
   }
   

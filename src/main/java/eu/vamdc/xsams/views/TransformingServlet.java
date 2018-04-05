@@ -82,7 +82,7 @@ public class TransformingServlet extends ErrorReportingServlet {
 	String result = file.convertXSAMS(getDataAsFile(key).getAbsolutePath());
 	
 	response.setStatus(HttpServletResponse.SC_OK);
-	response.getWriter().write(result);//.write(file.convertXSAMS(xsamsContent));
+	response.getWriter().write(result);
 	response.getWriter().flush();
     /*
     Transformer t = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null).newTransformer(getXslt(version));

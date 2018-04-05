@@ -20,6 +20,8 @@ import org.vamdc.xsams.schema.LineshapeType;
 import org.vamdc.xsams.schema.XSAMSData;
 import org.vamdc.xsams.io.JAXBContextFactory;
 
+import eu.vamdc.util.Settings;
+
 public class ConvertXsams2Hitran {
 
 	TableMoleculeHitran tableMol = new TableMoleculeHitran();
@@ -272,7 +274,12 @@ public class ConvertXsams2Hitran {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+			result = new StringBuilder();
+			result.append("An exception occurred : "+ e);
+			result.append("Please contact administrator : "+ Settings.CONTACT_ADDRESS);
+		} 
+		
 		return result.toString();
+
 	}
 }

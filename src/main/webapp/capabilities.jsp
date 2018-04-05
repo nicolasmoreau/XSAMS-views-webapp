@@ -22,10 +22,10 @@
     </interface>
     <interface xsi:type="vs:ParamHTTP">
       <accessURL><%=Locations.getServiceLocation(request)%></accessURL>
-      <resultType>text/html</resultType>
+      <resultType>text/plain</resultType>
     </interface>
     <versionOfStandards>12.07</versionOfStandards>
-    <versionOfSoftware>1.0-SNAPSHOT</versionOfSoftware>
+    <versionOfSoftware>1.0</versionOfSoftware>
     <numberOfInputs>1</numberOfInputs>
   </capability>
    
