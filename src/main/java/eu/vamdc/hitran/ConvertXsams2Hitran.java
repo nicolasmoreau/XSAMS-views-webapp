@@ -20,6 +20,8 @@ import org.vamdc.xsams.schema.LineshapeType;
 import org.vamdc.xsams.schema.XSAMSData;
 import org.vamdc.xsams.io.JAXBContextFactory;
 
+import eu.vamdc.cases.CaseUtil;
+import eu.vamdc.util.FormatUtil;
 import eu.vamdc.util.Settings;
 
 public class ConvertXsams2Hitran {
@@ -94,7 +96,7 @@ public class ConvertXsams2Hitran {
 					/* Vacuum wavenumber */
 					transition = energy.getValue().getValue();
 					units = energy.getValue().getUnits();
-					transition = data.getWavenumberHitran(transition, units);
+					transition = FormatUtil.getWavenumberHitran(transition, units);
 					data.setVacWn(transition);
 					/* Sources */
 					if (energy.getSources().isEmpty())
@@ -108,7 +110,7 @@ public class ConvertXsams2Hitran {
 					// only one accuracy is relevant ?
 					if (!energy.getAccuracies().isEmpty()) {
 						accuracy = energy.getAccuracies().get(0).getValue();
-						accuracy = data.getWavenumberHitran(accuracy, units);
+						accuracy = FormatUtil.getWavenumberHitran(accuracy, units);
 						data.setVacWnErr(accuracy);
 					}
 					/* get lower and Upper state references */
@@ -127,7 +129,7 @@ public class ConvertXsams2Hitran {
 					if (ELowRef.getMolecularStateCharacterisation().getStateEnergy() != null) {
 						nrj = ELowRef.getMolecularStateCharacterisation().getStateEnergy().getValue().getValue();
 						units = ELowRef.getMolecularStateCharacterisation().getStateEnergy().getValue().getUnits();
-						data.getWavenumberHitran(nrj, units);
+						//data.getWavenumberHitran(nrj, units); => useless because no affectation of result
 						data.setELow(nrj);
 					}
 
@@ -174,16 +176,16 @@ public class ConvertXsams2Hitran {
 
 					vCode = tableQ.getHitranGlobalQCode(inChIKey);
 					/* Upper-state "local" quanta */
-					String qUp = data.getLocalQuanta(EUpRef, "upper", data.getM());
+					String qUp = data.getLocalQuanta(EUpRef, CaseUtil.UPPER_LEVEL);
 					data.setQUp(qUp);
 					/* Upper-state "global" quanta */
-					String vUp = data.getGlobalQuanta(EUpRef, vCode, data.getM(), data.getI());
+					String vUp = data.getGlobalQuanta(EUpRef, vCode);
 					data.setVUp(vUp);
 					/* Lower-state "local" quanta */
-					String qLow = data.getLocalQuanta(ELowRef, "lower", data.getM());
+					String qLow = data.getLocalQuanta(ELowRef, CaseUtil.LOWER_LEVEL);
 					data.setQLow(qLow);
 					/* Lower-state "global" quanta */
-					String vLow = data.getGlobalQuanta(ELowRef, vCode, data.getM(), data.getI());
+					String vLow = data.getGlobalQuanta(ELowRef, vCode);
 					data.setVLow(vLow);
 
 					/* Get gamma, n and delta values */

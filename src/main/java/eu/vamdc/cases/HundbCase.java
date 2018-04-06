@@ -10,7 +10,7 @@ import eu.vamdc.util.FormatUtil;
 public class HundbCase implements MolecularCase{
 
 	@Override
-	public String getCaseString(CaseParameters parameters) throws CaseException {
+	public String getCaseString(CaseParameters parameters, QuantumNumbers qn) throws CaseException {
 		StringBuilder result = new StringBuilder();
 		Case castedCase = (Case) parameters.getBaseCase();
 		String BrJ = " ";
@@ -19,31 +19,31 @@ public class HundbCase implements MolecularCase{
 		String N = "   ";
 
 		if (parameters.getLevel().equals(CaseUtil.LOWER_LEVEL)) {
-			HitranData.setJlow(castedCase.getQNs().getJ());
-			if (HitranData.getJlow() != null) {
-				J = String.format(Locale.ROOT, "%3d", HitranData.getJlow().intValue());
+			qn.setJlow(castedCase.getQNs().getJ());
+			if (qn.getJlow() != null) {
+				J = String.format(Locale.ROOT, "%3d", qn.getJlow().intValue());
 				/* If Jup has already been assigned then get the branch name */
-				if (HitranData.getJup() > -1.0) {
+				if (qn.getJup() > -1.0) {
 					try {
-						BrJ = CaseUtil.getBranchName(HitranData.getJup(), HitranData.getJlow());
+						BrJ = CaseUtil.getBranchName(qn.getJup(), qn.getJlow());
 					} catch (IllegalArgumentException e) {
-						System.out.println("Branch not allowed for one transition: Jup=" + HitranData.getJup() + ", Jlow=" + HitranData.getJlow());
+						System.out.println("Branch not allowed for one transition: Jup=" + qn.getJup() + ", Jlow=" + qn.getJlow());
 					}
-					HitranData.setJlow(-1.0);
-					HitranData.setJup(-1.0);
+					qn.setJlow(-1.0);
+					qn.setJup(-1.0);
 				}
 			}
-			HitranData.setNlow(castedCase.getQNs().getN());
-			N = String.format(Locale.ROOT, "%3d", HitranData.getNlow());
-			if (HitranData.getNup() > -1) {
+			qn.setNlow(castedCase.getQNs().getN());
+			N = String.format(Locale.ROOT, "%3d", qn.getNlow());
+			if (qn.getNup() > -1) {
 
 				try {
-					BrN = CaseUtil.getBranchName(Double.valueOf(HitranData.getNup()), Double.valueOf(HitranData.getNlow()));
+					BrN = CaseUtil.getBranchName(Double.valueOf(qn.getNup()), Double.valueOf(qn.getNlow()));
 				} catch (IllegalArgumentException e) {
-					System.out.println("Branch not allowed for one transition: Nup=" + HitranData.getNup() + ", Nlow=" + HitranData.getNlow());
+					System.out.println("Branch not allowed for one transition: Nup=" + qn.getNup() + ", Nlow=" + qn.getNlow());
 				}
-				HitranData.setNlow(-1);
-				HitranData.setNup(-1);
+				qn.setNlow(-1);
+				qn.setNup(-1);
 			}
 			result.append(' ');
 			/* Br */
@@ -66,8 +66,8 @@ public class HundbCase implements MolecularCase{
 				result.append(String.format(Locale.ROOT, "%1s", castedCase.getQNs().getKronigParity()));
 
 			// Get some global quanta if available.
-			HitranData.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
-			HitranData.getv()[0] = castedCase.getQNs().getV();
+			qn.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
+			qn.getV()[0] = castedCase.getQNs().getV();
 
 		} else {
 			result.append(String.format(Locale.ROOT, "%10s", " "));
@@ -76,12 +76,12 @@ public class HundbCase implements MolecularCase{
 				result.append(String.format(Locale.ROOT, "%5s", " "));
 			else
 				result.append(FormatUtil.getFFormat5(castedCase.getQNs().getF().getValue()));
-			HitranData.setJup(castedCase.getQNs().getJ());
-			HitranData.setNup(castedCase.getQNs().getN());
+			qn.setJup(castedCase.getQNs().getJ());
+			qn.setNup(castedCase.getQNs().getN());
 
 			// Get some global quanta if available.
-			HitranData.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
-			HitranData.getv()[0] = castedCase.getQNs().getV();
+			qn.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
+			qn.getV()[0] = castedCase.getQNs().getV();
 
 		}
 		return result.toString();

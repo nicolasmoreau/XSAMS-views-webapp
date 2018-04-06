@@ -9,25 +9,25 @@ import eu.vamdc.hitran.HitranData;
 public class HundaCase implements MolecularCase{
 
 	@Override
-	public String getCaseString(CaseParameters parameters) throws CaseException {
+	public String getCaseString(CaseParameters parameters, QuantumNumbers qn) throws CaseException {
 		StringBuilder result = new StringBuilder();
 		Case castedCase = (Case) parameters.getBaseCase();
 		String Br = " ";
 		String J = "     ";
 
 		if (parameters.getLevel().equals(CaseUtil.LOWER_LEVEL)) {
-			HitranData.setJlow(castedCase.getQNs().getJ());
-			if (HitranData.getJlow() != null) {
-				J = String.format(Locale.ROOT, "%5.1f", HitranData.getJlow());
+			qn.setJlow(castedCase.getQNs().getJ());
+			if (qn.getJlow() != null) {
+				J = String.format(Locale.ROOT, "%5.1f", qn.getJlow());
 				/* If Jup has already been assigned then get the branch name */
-				if (HitranData.getJup() > -1.0) {
+				if (qn.getJup() > -1.0) {
 					try {
-						Br = CaseUtil.getBranchName(HitranData.getJup(), HitranData.getJlow());
+						Br = CaseUtil.getBranchName(qn.getJup(), qn.getJlow());
 					} catch (IllegalArgumentException e) {
-						System.out.println("Branch not allowed for one transition: Jup=" + HitranData.getJup() + ", Jlow=" + HitranData.getJlow());
+						System.out.println("Branch not allowed for one transition: Jup=" + qn.getJup() + ", Jlow=" + qn.getJlow());
 					}
-					HitranData.setJup(-1.0);
-					HitranData.setJlow(-1.0);
+					qn.setJup(-1.0);
+					qn.setJlow(-1.0);
 				}
 			}
 			result.append("   ");
@@ -45,9 +45,9 @@ public class HundaCase implements MolecularCase{
 				result.append(String.format(Locale.ROOT, "%5.1f", castedCase.getQNs().getF().getValue()));
 
 			// Get some global quanta if available.
-			HitranData.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
-			HitranData.getv()[0] = castedCase.getQNs().getV();
-			HitranData.setOmega(castedCase.getQNs().getOmega());
+			qn.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
+			qn.getV()[0] = castedCase.getQNs().getV();
+			qn.setOmega(castedCase.getQNs().getOmega());
 
 		} else {
 			result.append(String.format(Locale.ROOT, "%10s", " "));
@@ -56,12 +56,12 @@ public class HundaCase implements MolecularCase{
 				result.append(String.format(Locale.ROOT, "%5s", " "));
 			else
 				result.append(String.format(Locale.ROOT, "%5.1f", castedCase.getQNs().getF().getValue()));
-			HitranData.setJup(castedCase.getQNs().getJ());
+			qn.setJup(castedCase.getQNs().getJ());
 
 			// Get some global quanta if available.
-			HitranData.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
-			HitranData.getv()[0] = castedCase.getQNs().getV();
-			HitranData.setOmega(castedCase.getQNs().getOmega());
+			qn.setElecStateLabel(castedCase.getQNs().getElecStateLabel());
+			qn.getV()[0] = castedCase.getQNs().getV();
+			qn.setOmega(castedCase.getQNs().getOmega());
 
 		}
 		return result.toString();

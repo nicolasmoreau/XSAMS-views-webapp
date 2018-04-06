@@ -11,7 +11,7 @@ import eu.vamdc.util.FormatUtil;
 public class SphcsCase implements MolecularCase{
 
 	@Override
-	public String getCaseString(CaseParameters parameters) throws CaseException {
+	public String getCaseString(CaseParameters parameters, QuantumNumbers qn) throws CaseException {
 		StringBuilder result = new StringBuilder();
 		String sym = " ";
 		Case castedCase = (Case) parameters.getBaseCase();
@@ -48,14 +48,14 @@ public class SphcsCase implements MolecularCase{
 		/* Get some global quanta */
 		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
 			Integer mode = vis.getMode();
-			HitranData.getv()[mode - 1] = vis.getValue();
+			qn.getV()[mode - 1] = vis.getValue();
 		}
 		if (castedCase.getQNs().getVibSym() != null)
-			HitranData.setVibSym(castedCase.getQNs().getVibSym().getValue());
+			qn.setVibSym(castedCase.getQNs().getVibSym().getValue());
 		else 
-			HitranData.setVibSym("  ");
+			qn.setVibSym("  ");
 		/* HITRAN Online uses n instead of nv */
-		HitranData.setNv(CaseUtil.getRankingValue(castedCase.getQNs().getRS(), "n")); 
+		qn.setNv(CaseUtil.getRankingValue(castedCase.getQNs().getRS(), "n")); 
 
 		return result.toString();
 	}

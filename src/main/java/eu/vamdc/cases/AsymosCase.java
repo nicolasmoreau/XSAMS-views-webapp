@@ -12,7 +12,7 @@ import eu.vamdc.util.FormatUtil;
 public class AsymosCase implements MolecularCase{
 
 	@Override
-	public String getCaseString(CaseParameters parameters) throws CaseException {
+	public String getCaseString(CaseParameters parameters, QuantumNumbers qn) throws CaseException {
 		StringBuilder result = new StringBuilder();
 		boolean needSpecialQ = false;
 		Case castedCase = (Case) parameters.getBaseCase();
@@ -52,10 +52,10 @@ public class AsymosCase implements MolecularCase{
 				needSpecialQ = true;
 				break;
 			}
-			HitranData.getv()[mode - 1] = vis.getValue();
+			qn.getV()[mode - 1] = vis.getValue();
 		}
 		if (needSpecialQ) {
-			HitranData.setGlobalQ(CaseUtil.getSpecialGlobalQString(castedCase.getQNs().getVis()));
+			qn.setGlobalQ(CaseUtil.getSpecialGlobalQString(castedCase.getQNs().getVis()));
 		}
 
 		return result.toString();

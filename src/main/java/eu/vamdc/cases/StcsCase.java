@@ -6,14 +6,12 @@ import org.vamdc.xsams.cases.stcs.Case;
 import org.vamdc.xsams.cases.common.SymmetrySpeciesType;
 import org.vamdc.xsams.cases.common.VibrationalAMQNType;
 import org.vamdc.xsams.cases.common.VibrationalQNType;
-
-import eu.vamdc.hitran.HitranData;
 import eu.vamdc.util.FormatUtil;
 
 public class StcsCase implements MolecularCase{
 
 	@Override
-	public String getCaseString(CaseParameters parameters) throws CaseException {
+	public String getCaseString(CaseParameters parameters, QuantumNumbers qn) throws CaseException {
 		StringBuilder result = new StringBuilder();
 		Case castedCase = (Case) parameters.getBaseCase();
 
@@ -77,32 +75,32 @@ public class StcsCase implements MolecularCase{
 		int count = 0;
 		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
 			Integer mode = vis.getMode();
-			HitranData.getv()[mode - 1] = vis.getValue();
+			qn.getV()[mode - 1] = vis.getValue();
 			count++;
 		}
 
 		if (count > 0)
-			HitranData.setGlobalQ(CaseUtil.getSpecialGlobalQString(castedCase.getQNs().getVis()));
+			qn.setGlobalQ(CaseUtil.getSpecialGlobalQString(castedCase.getQNs().getVis()));
 		else
-			HitranData.setGlobalQ(String.format(Locale.ROOT, "%13s", " "));
+			qn.setGlobalQ(String.format(Locale.ROOT, "%13s", " "));
 		
-		HitranData.setParity(castedCase.getQNs().getParity());
+		qn.setParity(castedCase.getQNs().getParity());
 
 		/* NH3 */
 		for (VibrationalAMQNType lis : castedCase.getQNs().getLis()) {
 			Integer mode = lis.getMode();
-			HitranData.getL()[mode - 1] = lis.getValue();
+			qn.getL()[mode - 1] = lis.getValue();
 		}
 		
 		if (castedCase.getQNs().getVibSym() != null)
-			HitranData.setVibSym(castedCase.getQNs().getVibSym().getValue());
+			qn.setVibSym(castedCase.getQNs().getVibSym().getValue());
 		else 
-			HitranData.setVibSym("   ");
+			qn.setVibSym("   ");
 		
 		/* stcs */
 		
 		if (!castedCase.getQNs().getLS().isEmpty()) 
-			HitranData.setL_stcs(castedCase.getQNs().getLS().get(0));
+			qn.setL_stcs(castedCase.getQNs().getLS().get(0));
 		
 		return result.toString();
 	}

@@ -2,11 +2,12 @@ package eu.vamdc.cases;
 
 import org.vamdc.xsams.cases.common.BaseCase;
 
+
+
 public class CaseParameters {
 	private BaseCase baseCase;
 	private String level;
 	private Integer m;
-	
 	public CaseParameters(BaseCase baseCase){
 		this.baseCase = baseCase;
 	}

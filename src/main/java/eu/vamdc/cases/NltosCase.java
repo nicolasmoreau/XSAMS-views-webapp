@@ -10,7 +10,7 @@ import eu.vamdc.util.FormatUtil;
 public class NltosCase implements MolecularCase{
 
 	@Override
-	public String getCaseString(CaseParameters parameters) throws CaseException {
+	public String getCaseString(CaseParameters parameters, QuantumNumbers qn) throws CaseException {
 		StringBuilder result = new StringBuilder();
 		Case castedCase = (Case) parameters.getBaseCase();
 
@@ -43,9 +43,9 @@ public class NltosCase implements MolecularCase{
 			result.append(String.format(Locale.ROOT, "%1s", "-"));
 
 		/* Get some global quanta */
-		HitranData.getv()[0] = castedCase.getQNs().getV1();
-		HitranData.getv()[1] = castedCase.getQNs().getV2();
-		HitranData.getv()[2] = castedCase.getQNs().getV3();
+		qn.getV()[0] = castedCase.getQNs().getV1();
+		qn.getV()[1] = castedCase.getQNs().getV2();
+		qn.getV()[2] = castedCase.getQNs().getV3();
 
 		return result.toString();
 	}

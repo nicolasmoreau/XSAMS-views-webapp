@@ -5,13 +5,12 @@ import java.util.Locale;
 import org.vamdc.xsams.cases.lpos.Case;
 import org.vamdc.xsams.cases.common.VibrationalQNType;
 
-import eu.vamdc.hitran.HitranData;
 import eu.vamdc.util.FormatUtil;
 
 public class LposCase implements MolecularCase{
 
 	@Override
-	public String getCaseString(CaseParameters parameters) throws CaseException {
+	public String getCaseString(CaseParameters parameters, QuantumNumbers qn) throws CaseException {
 		StringBuilder result = new StringBuilder();
 		boolean needSpecialQ = false;
 		Case castedCase = (Case) parameters.getBaseCase();
@@ -19,18 +18,18 @@ public class LposCase implements MolecularCase{
 		String J = "   ";
 
 		if (parameters.getLevel().equals(CaseUtil.LOWER_LEVEL)) {
-			HitranData.setJlow(Double.valueOf(castedCase.getQNs().getJ()));
-			if (HitranData.getJlow() != null) {
-				J = String.format(Locale.ROOT, "%3d", HitranData.getJlow().intValue());
+			qn.setJlow(Double.valueOf(castedCase.getQNs().getJ()));
+			if (qn.getJlow() != null) {
+				J = String.format(Locale.ROOT, "%3d", qn.getJlow().intValue());
 				/* If Jup has already been assigned then get the branch name */
-				if (HitranData.getJup() > -1.0) {
+				if (qn.getJup() > -1.0) {
 					try {
-						Br = CaseUtil.getBranchName(HitranData.getJup(), HitranData.getJlow());
+						Br = CaseUtil.getBranchName(qn.getJup(), qn.getJlow());
 					} catch (IllegalArgumentException e) {
-						System.out.println("Branch not allowed for one transition: Jup=" + HitranData.getJup() + ", Jlow=" + HitranData.getJlow());
+						System.out.println("Branch not allowed for one transition: Jup=" + qn.getJup() + ", Jlow=" + qn.getJlow());
 					}
-					HitranData.setJlow(-1.0);
-					HitranData.setJup(-1.0);
+					qn.setJlow(-1.0);
+					qn.setJup(-1.0);
 				}
 			}
 			result.append(String.format(Locale.ROOT, "%5s", " "));
@@ -50,18 +49,18 @@ public class LposCase implements MolecularCase{
 			/* Get some global quanta */
 			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
 				Integer mode = vis.getMode();
-				HitranData.getv()[mode - 1] = vis.getValue();
+				qn.getV()[mode - 1] = vis.getValue();
 			}
-			HitranData.setL_class7(castedCase.getQNs().getL());
-			HitranData.setParity(castedCase.getQNs().getParity());
-			HitranData.setVibInv(castedCase.getQNs().getVibInv());
+			qn.setL_class7(castedCase.getQNs().getL());
+			qn.setParity(castedCase.getQNs().getParity());
+			qn.setVibInv(castedCase.getQNs().getVibInv());
 
 		} else {
 			result.append(String.format(Locale.ROOT, "%10s", " "));
 			/* No F displayed in HITRAN example */
 			result.append(String.format(Locale.ROOT, "%5s", " "));
 
-			HitranData.setJup(Double.valueOf(castedCase.getQNs().getJ()));
+			qn.setJup(Double.valueOf(castedCase.getQNs().getJ()));
 
 			/* Get some global quanta */
 			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
@@ -70,15 +69,15 @@ public class LposCase implements MolecularCase{
 					needSpecialQ = true;
 					break;
 				}
-				HitranData.getv()[mode - 1] = vis.getValue();
+				qn.getV()[mode - 1] = vis.getValue();
 			}
 			if (needSpecialQ) {
-				HitranData.setGlobalQ(CaseUtil.getSpecialGlobalQString(castedCase.getQNs().getVis()));
+				qn.setGlobalQ(CaseUtil.getSpecialGlobalQString(castedCase.getQNs().getVis()));
 			}
 
-			HitranData.setL_class7(castedCase.getQNs().getL());
-			HitranData.setParity(castedCase.getQNs().getParity());
-			HitranData.setVibInv(castedCase.getQNs().getVibInv());
+			qn.setL_class7(castedCase.getQNs().getL());
+			qn.setParity(castedCase.getQNs().getParity());
+			qn.setVibInv(castedCase.getQNs().getVibInv());
 		}
 		return result.toString();
 	}
