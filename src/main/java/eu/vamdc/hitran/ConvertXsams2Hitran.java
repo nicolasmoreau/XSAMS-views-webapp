@@ -155,7 +155,7 @@ public class ConvertXsams2Hitran {
 						S = probability.getLineStrength().getValue().getValue();
 						units = probability.getLineStrength().getValue().getUnits();
 						/* Convert into HITRAN units */
-						S = data.getIntensityHitran(S, units);
+						S = FormatUtil.getIntensityHitran(S, units);
 						data.setS(S);
 						if (!probability.getLineStrength().getAccuracies().isEmpty()) {
 							accuracy = probability.getLineStrength().getAccuracies().get(0).getValue();
