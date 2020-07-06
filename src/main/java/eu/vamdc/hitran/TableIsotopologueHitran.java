@@ -203,21 +203,6 @@ public class TableIsotopologueHitran {
 		TableI.put("GJFMDWMEOCWXGJ-GIJGHNMVSA-N", 7);
 		TableI.put("GJFMDWMEOCWXGJ-INZTZQCYSA-N", 8);
 		TableI.put("GJFMDWMEOCWXGJ-DURHDXIWSA-N", 9);
-		
-		/* Uranium hexafluoride: Not Yet implemented */
-		TableI.put("SANRKQGLYCLAFE-HVNCDEQJSA-H", 1);
-		TableI.put("SANRKQGLYCLAFE-MGTGSAQDSA-H", 2);
-		TableI.put("SANRKQGLYCLAFE-LOOCZFPFSA-H", 3);
-		TableI.put("SANRKQGLYCLAFE-XONLETMJSA-H", 4);
-		TableI.put("SANRKQGLYCLAFE-ZFNFDAPRSA-H", 5);
-		TableI.put("SANRKQGLYCLAFE-PTNNBOAISA-H", 6);
-		TableI.put("SANRKQGLYCLAFE-UIXBQZTMSA-H", 7);
-		TableI.put("SANRKQGLYCLAFE-KTTJZPQESA-H", 8);
-		
-		/* Silicon tetrafluoride: Not Yet implemented */
-		TableI.put("ABTOQLMXBSRXSM-YXLLSUOZSA-N", 1);
-		TableI.put("ABTOQLMXBSRXSM-HOSYLAQJSA-N", 2);
-		TableI.put("ABTOQLMXBSRXSM-RHRFEJLCSA-N", 3);
 	}
 
 	/**
