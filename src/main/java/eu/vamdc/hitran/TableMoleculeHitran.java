@@ -115,6 +115,10 @@ public class TableMoleculeHitran {
 
 		/* Ruthenium tetroxide: Not Yet implemented */
 		TableM.put("GJFMDWMEOCWXGJ", 99);
+		/* Uranium hexafluoride: Not Yet implemented */
+		TableM.put("SANRKQGLYCLAFE", 98);
+		/* Silicon tetrafluoride: Not Yet implemented */
+		TableI.put("ABTOQLMXBSRXSM", 99);
 
 	}
 
