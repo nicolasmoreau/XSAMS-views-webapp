@@ -12,14 +12,11 @@ import org.vamdc.xsams.schema.BasisStateType;
 import org.vamdc.xsams.schema.MolecularStateType;
 import org.vamdc.xsams.schema.StateExpansionType;
 
-import eu.vamdc.cases.CaseException;
-import eu.vamdc.cases.CaseFactory;
-import eu.vamdc.cases.CaseParameters;
-import eu.vamdc.cases.CaseUtil;
-import eu.vamdc.cases.MolecularCase;
-import eu.vamdc.cases.QuantumNumbers;
-
 public class HitranData {
+
+	public final double c = 299792458; // speed of light (m/s)
+	public final double L = 2.6867774e19; // Loschmidt number (molecule.cm-3)
+
 	private int M; // Molecule Number
 	private int I; // Isotopologue number
 	private double vacWn; // Vacuum wavenumber
@@ -55,33 +52,56 @@ public class HitranData {
 	private double gUp; // Statistical weight of the upper state
 	private double gLow; // Statistical weight of the lower state
 
-	//private static Double Jup = -1.0;
+	private static Double Jup = -1.0;
+	private static Double Jlow = -1.0;
+	private static Integer Nup = -1;
+	private static Integer Nlow = -1;
 
-	private QuantumNumbers qn;
+	// Some global quanta
+	private static String elecStateLabel;
+	private static Double omega;
+	private static Integer l2;
+	private static Integer l_class7;
+	private static String parity;
+	private static Integer[] v = new Integer[7];
 	
+	/* for NH3 */
+	private static Integer[] l = new Integer[7];
+	private static String VibSym; /* also used for Hitran-Online CH4 */
+	
+	private static Integer Nv; /* for Hitran-Online CH4 */
+	
+	private static Integer l_stcs;
+	
+	private static Integer rank;
+	private static String vibInv;
+	// Global Q when class 10
+	private static String globalQ = "";
+
 	/**
-	 * Creates a new HitranData instance by initializing all output fields.
+	 * Gets the type of the branch. Other values are not allowed
+	 * 
+	 * @param X1
+	 * @param X2
+	 * @return the type of the branch: O, P, Q, R or S
 	 */
 
-	public HitranData() {
-		M = 0;
-		I = 1;
-		vacWn = vacWnErr = 0.0;
-		S = SErr = 0.0;
-		A = 0.0;
-		gammaAir = gammaAirErr = 0.0;
-		gammaSelf = gammaSelfErr = 0.0;
-		eLow = 0.0;
-		nAir = nAirErr = 0.0;
-		deltaAir = deltaAirErr = 0.0;
-		vUp = vLow = qUp = qLow = String.format(Locale.ROOT, "%06d", 0);
-		iErr = "";
-		iRef = String.format(Locale.ROOT, "0 0 0 0 0 0");
-		flag = ' ';
-		gUp = 0.0;
-		gLow = 0.0;
-		qn = new QuantumNumbers();
-
+	private String getBranchName(Double X1, Double X2) {
+		Double DX = X1 - X2;
+		switch (DX.intValue()) {
+		case -2:
+			return "O";
+		case -1:
+			return "P";
+		case 0:
+			return "Q";
+		case 1:
+			return "R";
+		case 2:
+			return "S";
+		default:
+			throw new IllegalArgumentException("Branch not allowed: DX=" + X1 + "-" + X2);
+		}
 	}
 
 	private Integer getRankingValue(List<RankingType> RS, String rankingName) {
@@ -92,92 +112,929 @@ public class HitranData {
 		return 0;
 	}
 
+	private String getFFormat5(double F) {
+		String str;
+
+		/* We check if F is integer or half integer */
+		if (F != Math.round(F))
+			str = String.format(Locale.ROOT, "%5.1f", F);
+		else
+			str = String.format(Locale.ROOT, "%5.0f", F);
+
+		return str;
+	}
+
+	private String getFFormat4(double F) {
+		String str;
+
+		/* We check if F is integer or half integer */
+		if (F != Math.round(F))
+			str = String.format(Locale.ROOT, "%4.1f", F);
+		else
+			str = String.format(Locale.ROOT, "%4.0f", F);
+
+		return str;
+	}
+
+	/**
+	 * Group 1
+	 * 
+	 * @param qnCase
+	 * @return
+	 */
+	private String nltcsCase(BaseCase qnCase) {
+		StringBuffer result = new StringBuffer();
+		org.vamdc.xsams.cases.nltcs.Case castedCase = (org.vamdc.xsams.cases.nltcs.Case) qnCase;
+
+		/* J */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+		/* Ka */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKa()));
+		/* Kc */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKc()));
+		/* F */
+		if (castedCase.getQNs().getF() == null) {
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+		} else {
+			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+		}
+		/* Sym */
+		if (castedCase.getQNs().getParity() == null) {
+			result.append(' ');
+		} else {
+			result.append(String.format(Locale.ROOT, "%1s", castedCase.getQNs().getParity()));
+		}
+
+		/* Get some global quanta */
+		v[0] = castedCase.getQNs().getV1();
+		v[1] = castedCase.getQNs().getV2();
+		v[2] = castedCase.getQNs().getV3();
+
+		return result.toString();
+	}
+
+	/**
+	 * Group 1
+	 * 
+	 * @param qnCase
+	 * @return
+	 */
+	private String asymcsCase(BaseCase qnCase) {
+		StringBuffer result = new StringBuffer();
+		boolean needSpecialQ = false;
+		org.vamdc.xsams.cases.asymcs.Case castedCase = (org.vamdc.xsams.cases.asymcs.Case) qnCase;
+
+		/* J */
+		/* in some files (like SO3) no J values are filled */
+		if (castedCase.getQNs().getJ() == null)
+			result.append(String.format(Locale.ROOT, "%3s", " "));
+		else
+			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+		/* Ka */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKa()));
+		/* Kc */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKc()));
+
+		/* F */
+		if (castedCase.getQNs().getF() == null)
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+		else
+			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+		/* Sym */
+		if (castedCase.getQNs().getParity() == null)
+			result.append(' ');
+		else
+			result.append(String.format(Locale.ROOT, "%1s", castedCase.getQNs().getParity()));
+
+		/* Get some global quanta */
+		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+			Integer mode = vis.getMode();
+			/* For larger molecule like CH3OH from CDMS */
+			if (mode > 6) {
+				needSpecialQ = true;
+				break;
+			}
+			v[mode - 1] = vis.getValue();
+		}
+		if (needSpecialQ) {
+			globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
+		}
+
+		return result.toString();
+	}
+
+	/**
+	 * Group 1, tested for HO2
+	 * 
+	 * @param qnCase
+	 * @return
+	 */
+	private String asymosCase(BaseCase qnCase) {
+		StringBuffer result = new StringBuffer();
+		boolean needSpecialQ = false;
+		org.vamdc.xsams.cases.asymos.Case castedCase = (org.vamdc.xsams.cases.asymos.Case) qnCase;
+
+		/* N */
+		/*
+		 * In this case J is Double. For matching HITRAN format we take N, the quantum
+		 * number associated with the rotational angular momentum
+		 */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getN()));
+		/* Ka */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKa()));
+		/* Kc */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKc()));
+
+		/* F */
+		if (castedCase.getQNs().getF() == null)
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+		else
+			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+		/*
+		 * Sym field (not a symmetry) is the J-coding defined as follows: + means J =
+		 * N+1/2 and - means J = N-1/2
+		 */
+
+		double Sym = castedCase.getQNs().getJ() - castedCase.getQNs().getN();
+		if (Sym == 0.5)
+			result.append(String.format(Locale.ROOT, "%1s", "+"));
+		else
+			result.append(String.format(Locale.ROOT, "%1s", "-"));
+
+		/* Get some global quanta */
+		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+			Integer mode = vis.getMode();
+			if (mode > 6) {
+				needSpecialQ = true;
+				break;
+			}
+			v[mode - 1] = vis.getValue();
+		}
+		if (needSpecialQ) {
+			globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
+		}
+
+		return result.toString();
+	}
+
+	/**
+	 * Group 1, tested for NO2
+	 * 
+	 * @param qnCase
+	 * @return
+	 */
+
+	private String nltosCase(BaseCase qnCase) {
+		StringBuffer result = new StringBuffer();
+		org.vamdc.xsams.cases.nltos.Case castedCase = (org.vamdc.xsams.cases.nltos.Case) qnCase;
+
+		/* N */
+		/*
+		 * In this case J is Double. For matching HITRAN format we take N, the quantum
+		 * number associated with the rotational angular momentum
+		 */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getN()));
+		/* Ka */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKa()));
+		/* Kc */
+		result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getKc()));
+
+		/* F */
+		if (castedCase.getQNs().getF() == null)
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+		else
+			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+		/*
+		 * Sym field (not a symmetry) is the J-coding defined as follows: + means J =
+		 * N+1/2 and - means J = N-1/2
+		 */
+
+		double Sym = castedCase.getQNs().getJ() - castedCase.getQNs().getN();
+		if (Sym == 0.5)
+			result.append(String.format(Locale.ROOT, "%1s", "+"));
+		else
+			result.append(String.format(Locale.ROOT, "%1s", "-"));
+
+		/* Get some global quanta */
+		v[0] = castedCase.getQNs().getV1();
+		v[1] = castedCase.getQNs().getV2();
+		v[2] = castedCase.getQNs().getV3();
+
+		return result.toString();
+	}
+
+	/**
+	 * Group 2
+	 * 
+	 * @param qnCase
+	 * @param level
+	 * @return
+	 */
+	private String ltcsCase(BaseCase qnCase, String level) {
+		StringBuffer result = new StringBuffer();
+		org.vamdc.xsams.cases.ltcs.Case castedCase = (org.vamdc.xsams.cases.ltcs.Case) qnCase;
+		String Br = " ";
+		String J = "   ";
+
+		if (level.equals("lower")) {
+			Jlow = Double.valueOf(castedCase.getQNs().getJ());
+			if (Jlow != null) {
+				J = String.format(Locale.ROOT, "%3d", Jlow.intValue());
+				/* If Jup has already been assigned then get the branch name */
+				if (Jup > -1.0) {
+					try {
+						Br = getBranchName(Jup, Jlow);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Branch not allowed for one transition: Jup=" + Jup + ", Jlow=" + Jlow);
+					}
+					Jup = Jlow = -1.0;
+				}
+			}
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", Br));
+			/* J */
+			result.append(J);
+			/* Sym */
+			String Sym = castedCase.getQNs().getKronigParity();
+			result.append(String.format(Locale.ROOT, "%1s", (Sym == null) ? " " : Sym));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+			/* Get some global quanta */
+			l2 = castedCase.getQNs().getL2();
+			v[0] = castedCase.getQNs().getV1();
+			v[1] = castedCase.getQNs().getV2();
+			v[2] = castedCase.getQNs().getV3();
+			if (castedCase.getQNs().getR() != null)
+				rank = castedCase.getQNs().getR().getValue();
+			parity = castedCase.getQNs().getParity();
+
+		} else {
+			result.append(String.format(Locale.ROOT, "%10s", " "));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+			Jup = Double.valueOf(castedCase.getQNs().getJ());
+
+			/* Get some global quanta */
+			l2 = castedCase.getQNs().getL2();
+			v[0] = castedCase.getQNs().getV1();
+			v[1] = castedCase.getQNs().getV2();
+			v[2] = castedCase.getQNs().getV3();
+			if (castedCase.getQNs().getR() != null)
+				rank = castedCase.getQNs().getR().getValue();
+			parity = castedCase.getQNs().getParity();
+
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Group 2, CO
+	 * 
+	 * @param qnCase
+	 * @param level
+	 * @return
+	 */
+	private String dcsCase(BaseCase qnCase, String level) {
+		StringBuffer result = new StringBuffer();
+		org.vamdc.xsams.cases.dcs.Case castedCase = (org.vamdc.xsams.cases.dcs.Case) qnCase;
+		String Br = " ";
+		String J = "   ";
+
+		if (level.equals("lower")) {
+			Jlow = Double.valueOf(castedCase.getQNs().getJ());
+			if (Jlow != null) {
+				J = String.format(Locale.ROOT, "%3d", Jlow.intValue());
+				/* If Jup has already been assigned then get the branch name */
+				if (Jup > -1.0) {
+					try {
+						Br = getBranchName(Jup, Jlow);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Branch not allowed for one transition: Jup=" + Jup + ", Jlow=" + Jlow);
+					}
+					Jup = Jlow = -1.0;
+				}
+			}
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", Br));
+			/* J */
+			result.append(J);
+			/* Sym */
+			String Sym = castedCase.getQNs().getKronigParity();
+			result.append(String.format(Locale.ROOT, "%1s", (Sym == null) ? " " : Sym));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+			/* Get some global quanta */
+			v[0] = castedCase.getQNs().getV();
+
+		} else {
+			result.append(String.format(Locale.ROOT, "%10s", " "));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+			Jup = Double.valueOf(castedCase.getQNs().getJ());
+
+			/* Get some global quanta */
+			v[0] = castedCase.getQNs().getV();
+		}
+		return result.toString();
+	}
+
+	private String lpcsCase(BaseCase qnCase, String level) {
+		StringBuffer result = new StringBuffer();
+		boolean needSpecialQ = false;
+		org.vamdc.xsams.cases.lpcs.Case castedCase = (org.vamdc.xsams.cases.lpcs.Case) qnCase;
+		String Br = " ";
+		String J = "   ";
+
+		if (level.equals("lower")) {
+			Jlow = Double.valueOf(castedCase.getQNs().getJ());
+			if (Jlow != null) {
+				J = String.format(Locale.ROOT, "%3d", Jlow.intValue());
+				/* If Jup has already been assigned then get the branch name */
+				if (Jup > -1.0) {
+					try {
+						Br = getBranchName(Jup, Jlow);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Branch not allowed for one transition: Jup=" + Jup + ", Jlow=" + Jlow);
+					}
+					Jup = Jlow = -1.0;
+				}
+			}
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", Br));
+			/* J */
+			result.append(J);
+			/* Sym */
+			String Sym = castedCase.getQNs().getKronigParity();
+			result.append(String.format(Locale.ROOT, "%1s", (Sym == null) ? " " : Sym));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+			/* Get some global quanta */
+			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+				Integer mode = vis.getMode();
+				v[mode - 1] = vis.getValue();
+			}
+			l_class7 = castedCase.getQNs().getL();
+			parity = castedCase.getQNs().getParity();
+			vibInv = castedCase.getQNs().getVibInv();
+
+		} else {
+			result.append(String.format(Locale.ROOT, "%10s", " "));
+			/* no F in this case */
+			/*
+			 * if (castedCase.getQNs().getF() == null)
+			 * result.append(String.format(Locale.ROOT, "%5s", " ")); else
+			 * result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+			 */
+			Jup = Double.valueOf(castedCase.getQNs().getJ());
+
+			/* Get some global quanta */
+			int count = 0;
+			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+				Integer mode = vis.getMode();
+				/* mode = 7 with 43-HC3N-Hitran Online */
+				if (mode > 6) {
+					needSpecialQ = true;
+				}
+				v[mode - 1] = vis.getValue();
+				count++;
+			}
+			l_class7 = castedCase.getQNs().getL();
+			parity = castedCase.getQNs().getParity();
+			vibInv = castedCase.getQNs().getVibInv();
+			if (needSpecialQ) {
+				StringBuffer tmp = new StringBuffer();
+
+				for (int i = 0; i < count; i++) {
+					tmp.append(String.format(Locale.ROOT, "%d", v[i]));
+				}
+				Integer[] l = new Integer[10];
+				int i = 0;
+				for (VibrationalAMQNType lis : castedCase.getQNs().getLis()) {
+					l[i] = lis.getValue();
+					i++;
+				}
+				int l5 = (l[5 - 1] == null ? 0 : l[5 - 1]);
+				int l6 = (l[6 - 1] == null ? 0 : l[6 - 1]);
+				int l7 = (l[7 - 1] == null ? 0 : l[7 - 1]);
+				tmp.append(String.format(Locale.ROOT, "%2d%2d%2d", l5, l6, l7));
+				globalQ = tmp.toString();
+			}
+
+		}
+
+		return result.toString();
+	}
+
+	private String lposCase(BaseCase qnCase, String level) {
+		StringBuffer result = new StringBuffer();
+		boolean needSpecialQ = false;
+		org.vamdc.xsams.cases.lpos.Case castedCase = (org.vamdc.xsams.cases.lpos.Case) qnCase;
+		String Br = " ";
+		String J = "   ";
+
+		if (level.equals("lower")) {
+			Jlow = Double.valueOf(castedCase.getQNs().getJ());
+			if (Jlow != null) {
+				J = String.format(Locale.ROOT, "%3d", Jlow.intValue());
+				/* If Jup has already been assigned then get the branch name */
+				if (Jup > -1.0) {
+					try {
+						Br = getBranchName(Jup, Jlow);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Branch not allowed for one transition: Jup=" + Jup + ", Jlow=" + Jlow);
+					}
+					Jup = Jlow = -1.0;
+				}
+			}
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", Br));
+			/* J */
+			result.append(J);
+			/* Sym */
+			String Sym = castedCase.getQNs().getKronigParity();
+			result.append(String.format(Locale.ROOT, "%1s", (Sym == null) ? " " : Sym));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+
+			/* Get some global quanta */
+			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+				Integer mode = vis.getMode();
+				v[mode - 1] = vis.getValue();
+			}
+			l_class7 = castedCase.getQNs().getL();
+			parity = castedCase.getQNs().getParity();
+			vibInv = castedCase.getQNs().getVibInv();
+
+		} else {
+			result.append(String.format(Locale.ROOT, "%10s", " "));
+			/* No F displayed in HITRAN example */
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+
+			Jup = Double.valueOf(castedCase.getQNs().getJ());
+
+			/* Get some global quanta */
+			for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+				Integer mode = vis.getMode();
+				if (mode > 6) {
+					needSpecialQ = true;
+					break;
+				}
+				v[mode - 1] = vis.getValue();
+			}
+			if (needSpecialQ) {
+				globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
+			}
+
+			l_class7 = castedCase.getQNs().getL();
+			parity = castedCase.getQNs().getParity();
+			vibInv = castedCase.getQNs().getVibInv();
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Group 3
+	 * 
+	 * @param qnCase
+	 * @return
+	 */
+
+	private String sphcsCase(BaseCase qnCase) {
+		StringBuffer result = new StringBuffer();
+		String Sym = " ";
+		org.vamdc.xsams.cases.sphcs.Case castedCase = (org.vamdc.xsams.cases.sphcs.Case) qnCase;
+
+		/* J */
+		if (castedCase.getQNs().getJ() == null)
+			result.append(String.format(Locale.ROOT, "%3s", " "));
+		else
+			result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+		result.append(' ');
+		/* C */
+		/*
+		 * WARNING Contrary to what we retrieve in HITRAN database we want C2H4 in the
+		 * same output that CH4 but in this case Symmetry has a length of 3. So we need
+		 * to check it before.
+		 */
+		
+		if (castedCase.getQNs().getRovibSym() != null) {
+			Sym = castedCase.getQNs().getRovibSym().getValue();
+		}
+		if (Sym.length() == 3) // C2H4
+			result.append(String.format(Locale.ROOT, "%-3s", Sym));
+		else {
+			result.append(String.format(Locale.ROOT, "%-2s ", Sym));
+		}
+		/* alpha */
+		result.append(String.format(Locale.ROOT, "%3d", getRankingValue(castedCase.getQNs().getRS(), "alpha")));
+		/* F */
+		if (castedCase.getQNs().getF() == null)
+			result.append(String.format(Locale.ROOT, "%5s", " "));
+		else
+			result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+		
+		/* Get some global quanta */
+		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+			Integer mode = vis.getMode();
+			v[mode - 1] = vis.getValue();
+		}
+		if (castedCase.getQNs().getVibSym() != null)
+			VibSym = castedCase.getQNs().getVibSym().getValue();
+		else 
+			VibSym = "  ";
+		Nv = getRankingValue(castedCase.getQNs().getRS(), "n"); /* HITRAN Online uses n instead of nv */
+
+		return result.toString();
+	}
+
+	/**
+	 * Group 4
+	 * 
+	 * @param qnCase
+	 * @return
+	 */
+
+	private String stcsCase(BaseCase qnCase, int M) {
+		StringBuffer result = new StringBuffer();
+		org.vamdc.xsams.cases.stcs.Case castedCase = (org.vamdc.xsams.cases.stcs.Case) qnCase;
+
+		if (M == 11) { // NH3
+			/* J */
+			if (castedCase.getQNs().getJ() == null)
+				result.append(String.format(Locale.ROOT, "%2s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%2d", castedCase.getQNs().getJ()));
+			/* K */
+			if (castedCase.getQNs().getK() == null)
+				result.append(String.format(Locale.ROOT, "%3s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
+			/* vibInv */
+			if (castedCase.getQNs().getVibInv() == null)
+				result.append(String.format(Locale.ROOT, "%2s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%2s", castedCase.getQNs().getVibInv()));
+			result.append(String.format(Locale.ROOT, "%1s", " "));
+			/* RotSym */
+			SymmetrySpeciesType C = castedCase.getQNs().getRotSym();
+			result.append(String.format(Locale.ROOT, "%-3s", C == null ? " " : C.getValue()));
+			/* RoVibSym */
+			SymmetrySpeciesType Sym = castedCase.getQNs().getRovibSym();
+			result.append(String.format(Locale.ROOT, "%-3s", Sym == null ? " " : Sym.getValue()));
+			result.append(String.format(Locale.ROOT, "%1s", " "));
+		}
+
+		else {
+			/* J */
+			if (castedCase.getQNs().getJ() == null)
+				result.append(String.format(Locale.ROOT, "%3s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getJ()));
+			/* K */
+			if (castedCase.getQNs().getK() == null)
+				result.append(String.format(Locale.ROOT, "%3s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%3d", castedCase.getQNs().getK()));
+			/* l */
+			if (castedCase.getQNs().getLS().isEmpty()) 
+				result.append(String.format(Locale.ROOT, "%2s", " "));
+			else 
+				result.append(String.format(Locale.ROOT, "%2s", castedCase.getQNs().getLS().get(0)));
+			/* C */
+			SymmetrySpeciesType C = castedCase.getQNs().getRovibSym();
+			result.append(String.format(Locale.ROOT, "%-2s", C == null ? " " : C.getValue()));
+			/* Sym */
+			String Sym = null; // castedCase.getQNs().get
+			result.append(String.format(Locale.ROOT, "%1s", Sym == null ? " " : Sym)); // FIXME
+
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%4s", " "));
+			else
+				result.append(getFFormat4(castedCase.getQNs().getF().getValue()));
+		}
+
+		/* Get some global quanta */
+		int count = 0;
+		for (VibrationalQNType vis : castedCase.getQNs().getVis()) {
+			Integer mode = vis.getMode();
+			v[mode - 1] = vis.getValue();
+			count++;
+		}
+
+		if (count > 0)
+			globalQ = getSpecialGlobalQString(castedCase.getQNs().getVis());
+		else
+			globalQ = String.format(Locale.ROOT, "%13s", " ");
+		
+		parity = castedCase.getQNs().getParity();
+
+		/* NH3 */
+		for (VibrationalAMQNType lis : castedCase.getQNs().getLis()) {
+			Integer mode = lis.getMode();
+			l[mode - 1] = lis.getValue();
+		}
+		
+		if (castedCase.getQNs().getVibSym() != null)
+			VibSym = castedCase.getQNs().getVibSym().getValue();
+		else 
+			VibSym = "   ";
+		
+		/* stcs */
+		
+		if (!castedCase.getQNs().getLS().isEmpty()) 
+			l_stcs = castedCase.getQNs().getLS().get(0);
+		
+		return result.toString();
+	}
+
+	/**
+	 * Group 5
+	 * 
+	 * @param qnCase
+	 * @param level
+	 * @return
+	 */
+
+	private String hundbCase(BaseCase qnCase, String level) {
+		StringBuffer result = new StringBuffer();
+		org.vamdc.xsams.cases.hundb.Case castedCase = (org.vamdc.xsams.cases.hundb.Case) qnCase;
+		String BrJ = " ";
+		String J = "   ";
+		String BrN = " ";
+		String N = "   ";
+
+		if (level.equals("lower")) {
+			Jlow = castedCase.getQNs().getJ();
+			if (Jlow != null) {
+				J = String.format(Locale.ROOT, "%3d", Jlow.intValue());
+				/* If Jup has already been assigned then get the branch name */
+				if (Jup > -1.0) {
+					try {
+						BrJ = getBranchName(Jup, Jlow);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Branch not allowed for one transition: Jup=" + Jup + ", Jlow=" + Jlow);
+					}
+					Jup = Jlow = -1.0;
+				}
+			}
+			Nlow = castedCase.getQNs().getN();
+			N = String.format(Locale.ROOT, "%3d", Nlow);
+			if (Nup > -1) {
+
+				try {
+					BrN = getBranchName(Double.valueOf(Nup), Double.valueOf(Nlow));
+				} catch (IllegalArgumentException e) {
+					System.out.println("Branch not allowed for one transition: Nup=" + Nup + ", Nlow=" + Nlow);
+				}
+				Nup = Nlow = -1;
+			}
+			result.append(' ');
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", BrN));
+			/* N */
+			result.append(N);
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", BrJ));
+			/* J */
+			result.append(J);
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+			/* Sym */
+			if (castedCase.getQNs().getKronigParity() == null)
+				result.append(' ');
+			else
+				result.append(String.format(Locale.ROOT, "%1s", castedCase.getQNs().getKronigParity()));
+
+			// Get some global quanta if available.
+			elecStateLabel = castedCase.getQNs().getElecStateLabel();
+			v[0] = castedCase.getQNs().getV();
+
+		} else {
+			result.append(String.format(Locale.ROOT, "%10s", " "));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(getFFormat5(castedCase.getQNs().getF().getValue()));
+			Jup = castedCase.getQNs().getJ();
+			Nup = castedCase.getQNs().getN();
+
+			// Get some global quanta if available.
+			elecStateLabel = castedCase.getQNs().getElecStateLabel();
+			v[0] = castedCase.getQNs().getV();
+
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Group 6
+	 * 
+	 * @param qnCase
+	 * @param level
+	 * @return
+	 */
+
+	private String hundaCase(BaseCase qnCase, String level) {
+		StringBuffer result = new StringBuffer();
+		org.vamdc.xsams.cases.hunda.Case castedCase = (org.vamdc.xsams.cases.hunda.Case) qnCase;
+		String Br = " ";
+		String J = "     ";
+
+		if (level.equals("lower")) {
+			Jlow = castedCase.getQNs().getJ();
+			if (Jlow != null) {
+				J = String.format(Locale.ROOT, "%5.1f", Jlow);
+				/* If Jup has already been assigned then get the branch name */
+				if (Jup > -1.0) {
+					try {
+						Br = getBranchName(Jup, Jlow);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Branch not allowed for one transition: Jup=" + Jup + ", Jlow=" + Jlow);
+					}
+					Jup = Jlow = -1.0;
+				}
+			}
+			result.append("   ");
+			/* Br */
+			result.append(String.format(Locale.ROOT, "%1s", Br));
+			/* J */
+			result.append(J);
+			/* Sym */
+			String Sym = castedCase.getQNs().getKronigParity();
+			result.append(String.format(Locale.ROOT, "%1s", Sym == null ? " " : Sym));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%5.1f", castedCase.getQNs().getF().getValue()));
+
+			// Get some global quanta if available.
+			elecStateLabel = castedCase.getQNs().getElecStateLabel();
+			v[0] = castedCase.getQNs().getV();
+			omega = castedCase.getQNs().getOmega();
+
+		} else {
+			result.append(String.format(Locale.ROOT, "%10s", " "));
+			/* F */
+			if (castedCase.getQNs().getF() == null)
+				result.append(String.format(Locale.ROOT, "%5s", " "));
+			else
+				result.append(String.format(Locale.ROOT, "%5.1f", castedCase.getQNs().getF().getValue()));
+			Jup = castedCase.getQNs().getJ();
+
+			// Get some global quanta if available.
+			elecStateLabel = castedCase.getQNs().getElecStateLabel();
+			v[0] = castedCase.getQNs().getV();
+			omega = castedCase.getQNs().getOmega();
+
+		}
+		return result.toString();
+	}
+
+	private String getSpecialGlobalQString(List<VibrationalQNType> VibQN) {
+		StringBuffer result = new StringBuffer();
+		Integer nb = 0;
+		Integer val = 0;
+
+		for (VibrationalQNType vi : VibQN) {
+			if (vi.getValue() == 0)
+				continue;
+			val = vi.getValue();
+			if (nb > 0)
+				result.append("+");
+			result.append(String.format(Locale.ROOT, "%s", val == 1 ? "" : val));
+			result.append("V" + vi.getMode());
+			nb++;
+		}
+		/* if all modes are 0 */
+		if (result.toString().equals("")) {
+			result.append(String.format(Locale.ROOT, "%7s", " "));
+			result.append("GROUND");
+		}
+		return result.toString();
+	}
+
 	/**
 	 * Gets the value of the Upper/Lower-state "global" quanta
 	 * 
 	 * @param ERef
 	 * @param vCode
+	 * @param M
+	 * @param I
 	 * @return a string value
 	 */
 
-	public String getGlobalQuanta(MolecularStateType ERef, int vCode) {
+	public String getGlobalQuanta(MolecularStateType ERef, int vCode, int M, int I) {
 		StringBuffer result = new StringBuffer();
 		/* We first check if BasisStates are set */
 		if (ERef.getStateExpansions().isEmpty()) {
 			switch (vCode) {
 			case 1:
 				result.append(String.format(Locale.ROOT, "%13s", " "));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
 				break;
 			case 2: // should be O2
 				result.append(String.format(Locale.ROOT, "%7s", " "));
-				result.append(String.format(Locale.ROOT, "%1s", qn.getElecStateLabel() == null ? " " : qn.getElecStateLabel()));
+				result.append(String.format(Locale.ROOT, "%1s", elecStateLabel == null ? " " : elecStateLabel));
 				result.append(String.format(Locale.ROOT, "%5s", " "));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
 				break;
 			case 3:
 				result.append(String.format(Locale.ROOT, "%7s", " "));
-				result.append(String.format(Locale.ROOT, "%1s", qn.getElecStateLabel() == null ? " " : qn.getElecStateLabel()));
-				if (qn.getOmega() != null)
-					result.append(String.format(Locale.ROOT, "%3s", qn.getOmega() == 1.5 ? "3/2" : "1/2")); // i
+				result.append(String.format(Locale.ROOT, "%1s", elecStateLabel == null ? " " : elecStateLabel));
+				if (omega != null)
+					result.append(String.format(Locale.ROOT, "%3s", omega == 1.5 ? "3/2" : "1/2")); // i
 				// parameter
 				result.append(String.format(Locale.ROOT, "%2s", " "));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
 				break;
 			case 4:
 				result.append(String.format(Locale.ROOT, "%7s", " "));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-				result.append(String.format(Locale.ROOT, "%2s", String.valueOf(qn.getL2() == null ? " " : qn.getL2())));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[1] == null ? 0 : v[1]));
+				result.append(String.format(Locale.ROOT, "%2s", String.valueOf(l2 == null ? " " : l2)));
+				result.append(String.format(Locale.ROOT, "%2d", v[2] == null ? 0 : v[2]));
 				break;
 			case 5:
 				result.append(String.format(Locale.ROOT, "%6s", " "));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getL2() == null ? 0 : qn.getL2()));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
-				result.append(String.format(Locale.ROOT, "%1s", String.valueOf(qn.getRank() == null ? " " : qn.getRank())));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[1] == null ? 0 : v[1]));
+				result.append(String.format(Locale.ROOT, "%2d", l2 == null ? 0 : l2));
+				result.append(String.format(Locale.ROOT, "%2d", v[2] == null ? 0 : v[2]));
+				result.append(String.format(Locale.ROOT, "%1s", String.valueOf(rank == null ? " " : rank)));
 				break;
 			case 6:
 				result.append(String.format(Locale.ROOT, "%9s", " "));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[1] == null ? 0 : v[1]));
+				result.append(String.format(Locale.ROOT, "%2d", v[2] == null ? 0 : v[2]));
 				break;
 			case 7:
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[3] == null ? 0 : qn.getV()[3]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[4] == null ? 0 : qn.getV()[4]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getL_class7() == null ? 0 : qn.getL_class7()));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[1] == null ? 0 : v[1]));
+				result.append(String.format(Locale.ROOT, "%2d", v[2] == null ? 0 : v[2]));
+				result.append(String.format(Locale.ROOT, "%2d", v[3] == null ? 0 : v[3]));
+				result.append(String.format(Locale.ROOT, "%2d", v[4] == null ? 0 : v[4]));
+				result.append(String.format(Locale.ROOT, "%2d", l_class7 == null ? 0 : l_class7));
 				result.append(
-						String.format(Locale.ROOT, "%1s", (qn.getParity() == null || qn.getParity().equals("None")) ? " " : qn.getParity()));
-				result.append(String.format(Locale.ROOT, "%1s", qn.getRank() == null ? " " : String.valueOf(qn.getRank())));
-				result.append(String.format(Locale.ROOT, "%1s", qn.getVibInv() == null ? " " : qn.getVibInv()));
+						String.format(Locale.ROOT, "%1s", (parity == null || parity.equals("None")) ? " " : parity));
+				result.append(String.format(Locale.ROOT, "%1s", rank == null ? " " : String.valueOf(rank)));
+				result.append(String.format(Locale.ROOT, "%1s", vibInv == null ? " " : vibInv));
 				break;
 			case 8:
 				if (M == 11) { // NH3 case
 					result.append(String.format(Locale.ROOT, "%1s", " "));
-					result.append(String.format(Locale.ROOT, "%1d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-					result.append(String.format(Locale.ROOT, "%1d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-					result.append(String.format(Locale.ROOT, "%1d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
-					result.append(String.format(Locale.ROOT, "%1d", qn.getV()[3] == null ? 0 : qn.getV()[3]));
+					result.append(String.format(Locale.ROOT, "%1d", v[0] == null ? 0 : v[0]));
+					result.append(String.format(Locale.ROOT, "%1d", v[1] == null ? 0 : v[1]));
+					result.append(String.format(Locale.ROOT, "%1d", v[2] == null ? 0 : v[2]));
+					result.append(String.format(Locale.ROOT, "%1d", v[3] == null ? 0 : v[3]));
 					result.append(String.format(Locale.ROOT, "%1s", " "));
-					result.append(String.format(Locale.ROOT, "%1d", qn.getL()[2] == null ? 0 : qn.getL()[2]));
-					result.append(String.format(Locale.ROOT, "%1d", qn.getL()[3] == null ? 0 : qn.getL()[3]));
+					result.append(String.format(Locale.ROOT, "%1d", l[2] == null ? 0 : l[2]));
+					result.append(String.format(Locale.ROOT, "%1d", l[3] == null ? 0 : l[3]));
 					result.append(String.format(Locale.ROOT, "%1s", " "));
-					result.append(String.format(Locale.ROOT, "%1d", qn.getL_stcs() == null ? 0 : qn.getL_stcs()));
+					result.append(String.format(Locale.ROOT, "%1d", l_stcs == null ? 0 : l_stcs));
 					result.append(String.format(Locale.ROOT, "%1s", " "));
-					result.append(String.format(Locale.ROOT, "%-3s", qn.getVibSym()));
+					result.append(String.format(Locale.ROOT, "%-3s", VibSym));
 					result.append(String.format(Locale.ROOT, "%1s", " "));
 				} else {
 					result.append(String.format(Locale.ROOT, "%5s", " "));
-					result.append(String.format(Locale.ROOT, "%-2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-					result.append(String.format(Locale.ROOT, "%-2d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-					result.append(String.format(Locale.ROOT, "%-2d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
-					result.append(String.format(Locale.ROOT, "%-2d", qn.getV()[3] == null ? 0 : qn.getV()[3]));
+					result.append(String.format(Locale.ROOT, "%-2d", v[0] == null ? 0 : v[0]));
+					result.append(String.format(Locale.ROOT, "%-2d", v[1] == null ? 0 : v[1]));
+					result.append(String.format(Locale.ROOT, "%-2d", v[2] == null ? 0 : v[2]));
+					result.append(String.format(Locale.ROOT, "%-2d", v[3] == null ? 0 : v[3]));
 					result.append("  ");
 				}
 				break;
@@ -187,24 +1044,24 @@ public class HitranData {
 				 * these were not found in xsams
 				 */
 				result.append(String.format(Locale.ROOT, "%3s", " "));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[3] == null ? 0 : qn.getV()[3]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[4] == null ? 0 : qn.getV()[4]));
-				result.append(String.format(Locale.ROOT, "%2d", qn.getV()[5] == null ? 0 : qn.getV()[5]));
+				result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
+				result.append(String.format(Locale.ROOT, "%2d", v[1] == null ? 0 : v[1]));
+				result.append(String.format(Locale.ROOT, "%2d", v[2] == null ? 0 : v[2]));
+				result.append(String.format(Locale.ROOT, "%2d", v[3] == null ? 0 : v[3]));
+				result.append(String.format(Locale.ROOT, "%2d", v[4] == null ? 0 : v[4]));
+				result.append(String.format(Locale.ROOT, "%2d", v[5] == null ? 0 : v[5]));
 				break;
 			case 10:
 				if (M == 6) { /* Case of HITRAN Online */
 					result.append(String.format(Locale.ROOT, "%3s", " "));
-					result.append(String.format(Locale.ROOT, "%2d", qn.getV()[0] == null ? 0 : qn.getV()[0]));
-					result.append(String.format(Locale.ROOT, "%2d", qn.getV()[1] == null ? 0 : qn.getV()[1]));
-					result.append(String.format(Locale.ROOT, "%2d", qn.getV()[2] == null ? 0 : qn.getV()[2]));
-					result.append(String.format(Locale.ROOT, "%2d", qn.getV()[3] == null ? 0 : qn.getV()[3]));
-					result.append(String.format(Locale.ROOT, "%2d", qn.getNv()));
-					result.append(String.format(Locale.ROOT, "%-2s", qn.getVibSym()));
+					result.append(String.format(Locale.ROOT, "%2d", v[0] == null ? 0 : v[0]));
+					result.append(String.format(Locale.ROOT, "%2d", v[1] == null ? 0 : v[1]));
+					result.append(String.format(Locale.ROOT, "%2d", v[2] == null ? 0 : v[2]));
+					result.append(String.format(Locale.ROOT, "%2d", v[3] == null ? 0 : v[3]));
+					result.append(String.format(Locale.ROOT, "%2d", Nv));
+					result.append(String.format(Locale.ROOT, "%-2s", VibSym));
 				} else {
-					if (qn.getGlobalQ().equals("")) {
+					if (globalQ.equals("")) {
 						/*
 						 * globalQ can be equal to "" if no mode are filled in data. It seems that by
 						 * default, if no mode are filled it is because it is ground state
@@ -212,7 +1069,7 @@ public class HitranData {
 						result.append(String.format(Locale.ROOT, "%7s", " "));
 						result.append("GROUND");
 					} else
-						result.append(qn.getGlobalQ());
+						result.append(globalQ);
 				}
 				break;
 			default:
@@ -255,7 +1112,7 @@ public class HitranData {
 							 * if all v are equal to 0 or yVX if the Xth mode is different of 0 and is equal
 							 * to y.
 							 */
-							String specialCase = CaseUtil.getSpecialGlobalQString(castedCase.getQNs().getVis());
+							String specialCase = getSpecialGlobalQString(castedCase.getQNs().getVis());
 							result.append(specialCase);
 						}
 						break;
@@ -276,7 +1133,7 @@ public class HitranData {
 	 * @return the local quanta string value
 	 */
 
-	public String getLocalQuanta(MolecularStateType ERef, String level) throws Exception  {
+	public String getLocalQuanta(MolecularStateType ERef, String level, int M) {
 		String result = "";
 
 		if (ERef.getCases().isEmpty())
@@ -285,13 +1142,100 @@ public class HitranData {
 		if (ERef.getCases().size() > 1)
 			return "";
 		for (BaseCase quanta : ERef.getCases()) {
-			CaseParameters params = new CaseParameters(quanta, level, M);
-			MolecularCase currentCase = CaseFactory.buildCase(quanta.getCaseID());	
-			result = currentCase.getCaseString(params, this.qn);		
+			switch (quanta.getCaseID()) {
+			/* Group 1: Assymetric rotors */
+			case "nltcs":
+				result = nltcsCase(quanta);
+				break;
+			case "asymcs":
+				result = asymcsCase(quanta);
+				break;
+			case "asymos":
+				result = asymosCase(quanta);
+				break;
+			case "nltos":
+				result = nltosCase(quanta);
+				break;
+			/* Group 2: Diatomic and linear molecules */
+			case "ltcs":
+				result = ltcsCase(quanta, level);
+				break;
+			case "lpcs":
+				result = lpcsCase(quanta, level);
+				break;
+			case "lpos":
+				result = lposCase(quanta, level);
+				break;
+			case "dcs":
+				result = dcsCase(quanta, level);
+				break;
+			/* Group 3: Spherical rotors */
+			case "sphcs":
+				result = sphcsCase(quanta);
+				break;
+			/* Group 4: Symmetric rotor */
+			case "stcs":
+				result = stcsCase(quanta, M);
+				break;
+			/* Group 5: Triplet-Sig ground electronic states */
+			case "hundb":
+				result = hundbCase(quanta, level);
+				break;
+			/* Group 6: Douplet-Pi ground electronic states */
+			case "hunda":
+				result = hundaCase(quanta, level);
+				break;
+			default:
+				throw new IllegalArgumentException("Case not handled: " + quanta.getCaseID());
+			}
 		}
 		return result;
 	}
 
+	/**
+	 * Converts value into HITRAN units: 1/cm.
+	 * 
+	 * @param value
+	 * @param units
+	 * @return value in 1/cm
+	 */
+
+	public double getWavenumberHitran(double value, String units) {
+		if (units.equals("1/cm"))
+			return value;
+		else if (units.equals("Hz")) {
+			return (value * (1 / c) * 1.0e-2);
+		} else if (units.equals("kHz")) {
+			return (value * (1 / c) * 1.0e1);
+		} else if (units.equals("MHz")) {
+			return (value * (1 / c) * 1.0e4);
+		} else if (units.equals("GHz")) {
+			return (value * (1 / c) * 1.0e7);
+		}
+		return -1.0;
+	}
+
+	/**
+	 * Converts intensity into HITRAN units.
+	 * 
+	 * @param S
+	 * @param units
+	 * @return intensity value into HITRAN units
+	 */
+
+	public double getIntensityHitran(double S, String units) {
+		// System.out.println(units + " " + S);
+		if (units.equals("1/cm2/atm")) {
+			return (S * ((1 * 296) / (L * 273.15)));
+		} else if (units.equals("cm2/molecule/cm")) { // HITRAN
+			return S;
+		} else if (units.equals("unitless")) {
+			// System.out.print("Warning: Because intensity is unitless, it has
+			// not been converted");
+			return 0.0;
+		}
+		return 0.0;
+	}
 
 	/**
 	 * Gets the molecular species identification (ID) number.
@@ -908,108 +1852,27 @@ public class HitranData {
 		this.gLow = gLow;
 	}
 
-	public void seteLow(double eLow) {
-		this.eLow = eLow;
-	}
+	/**
+	 * Creates a new HitranData instance by initializing all output fields.
+	 */
 
-	public void setvUp(String vUp) {
-		this.vUp = vUp;
-	}
+	public HitranData() {
+		M = 0;
+		I = 1;
+		vacWn = vacWnErr = 0.0;
+		S = SErr = 0.0;
+		A = 0.0;
+		gammaAir = gammaAirErr = 0.0;
+		gammaSelf = gammaSelfErr = 0.0;
+		eLow = 0.0;
+		nAir = nAirErr = 0.0;
+		deltaAir = deltaAirErr = 0.0;
+		vUp = vLow = qUp = qLow = String.format(Locale.ROOT, "%06d", 0);
+		iErr = "";
+		iRef = String.format(Locale.ROOT, "0 0 0 0 0 0");
+		flag = ' ';
+		gUp = 0.0;
+		gLow = 0.0;
 
-	public void setvLow(String vLow) {
-		this.vLow = vLow;
 	}
-
-	public void setqUp(String qUp) {
-		this.qUp = qUp;
-	}
-
-	public void setqLow(String qLow) {
-		this.qLow = qLow;
-	}
-
-	public void setiErr(String iErr) {
-		this.iErr = iErr;
-	}
-
-	public void setiRef(String iRef) {
-		this.iRef = iRef;
-	}
-
-	public void setFlag(char flag) {
-		this.flag = flag;
-	}
-
-	public double getVacWnErr() {
-		return vacWnErr;
-	}
-
-	public int getVacWnRef() {
-		return vacWnRef;
-	}
-
-	public double getSErr() {
-		return SErr;
-	}
-
-	public int getSRef() {
-		return SRef;
-	}
-
-	public int getGammaAirRef() {
-		return gammaAirRef;
-	}
-
-	public double getGammaSelfErr() {
-		return gammaSelfErr;
-	}
-
-	public int getGammaSelfRef() {
-		return gammaSelfRef;
-	}
-
-	public double geteLow() {
-		return eLow;
-	}
-
-	public double getnAirErr() {
-		return nAirErr;
-	}
-
-	public int getnAirRef() {
-		return nAirRef;
-	}
-
-	public double getDeltaAirErr() {
-		return deltaAirErr;
-	}
-
-	public int getDeltaAirRef() {
-		return deltaAirRef;
-	}
-
-	public String getvUp() {
-		return vUp;
-	}
-
-	public String getvLow() {
-		return vLow;
-	}
-
-	public String getqUp() {
-		return qUp;
-	}
-
-	public String getqLow() {
-		return qLow;
-	}
-
-	public String getiErr() {
-		return iErr;
-	}
-
-	public String getiRef() {
-		return iRef;
-	}
-
 }
